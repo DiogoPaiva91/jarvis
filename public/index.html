@@ -587,6 +587,30 @@
     .code-tab.just-edited { animation: code-tab-pulse 1.4s ease-out; }
     .code-tab.streaming   { animation: code-tab-pulse 1.2s ease-in-out infinite; }
 
+    /* "Live" affordance on the central Preview button when dev server is running but user is in editor view */
+    @keyframes preview-live-pulse {
+      0%   { box-shadow: 0 0 0 0 rgba(34,197,94,0.55); }
+      60%  { box-shadow: 0 0 10px 2px rgba(34,197,94,0.55); }
+      100% { box-shadow: 0 0 0 0 rgba(34,197,94,0); }
+    }
+    #centerViewPreviewBtn.center-preview-live {
+      animation: preview-live-pulse 1.6s ease-in-out infinite;
+      color: #22c55e !important;
+      background: rgba(34,197,94,0.10) !important;
+    }
+    #centerViewPreviewBtn.center-preview-live::before {
+      content: "● ";
+      color: #22c55e;
+      font-size: 9px;
+      vertical-align: middle;
+    }
+    .tree-entry-dot {
+      color: #22c55e;
+      font-size: 8px;
+      margin-right: 4px;
+      vertical-align: middle;
+    }
+
     /* ── File Tree (Cursor-like) ── */
     .tree-toolbar { display: flex; gap: 2px; }
     .tree-tool-btn {
@@ -4647,6 +4671,19 @@ function renderDevServerUI() {
       }
     }
   }
+  // Pulse + tooltip on the central Preview button to advertise the live app.
+  // Active when dev is running AND the user is currently viewing the editor.
+  const previewBtn = document.getElementById("centerViewPreviewBtn");
+  if (previewBtn) {
+    const inEditorView = (typeof _codeCenterCurrentView === "undefined") || _codeCenterCurrentView !== "preview";
+    if (devServerState.running && inEditorView) {
+      previewBtn.classList.add("center-preview-live");
+      previewBtn.title = "Ver app rodando" + (devServerState.port ? " em :" + devServerState.port : "");
+    } else {
+      previewBtn.classList.remove("center-preview-live");
+      previewBtn.title = "Preview";
+    }
+  }
   // If preview pane is open in dev mode, refresh URL
   const prev = document.getElementById("codePreviewPanel");
   if (prev && prev.style.display !== "none" && devServerState.running && devServerState.url) {
@@ -7343,9 +7380,12 @@ function makeTreeRow(f, depth) {
       + '<button class="tree-act" title="Nova pasta">&#128193;+</button>'
       + '</span>'
     : "";
+  const entryDot = (!f.isDir && isProjectEntryFile(f.path))
+    ? '<span class="tree-entry-dot" title="Entry do app — clica pra ver rodando">●</span>'
+    : "";
   row.innerHTML = '<span class="tree-chev">&#9656;</span>'
     + '<span class="tree-icon">' + icon + '</span>'
-    + '<span class="tree-name">' + escapeHtml(f.name).replace(/<br>/g,"") + '</span>'
+    + '<span class="tree-name">' + entryDot + escapeHtml(f.name).replace(/<br>/g,"") + '</span>'
     + actions;
   if (f.isDir) {
     row.addEventListener("click", (e) => { if (!e.target.closest(".tree-act")) toggleFolder(row); });
@@ -7562,6 +7602,16 @@ function openCtxMenu(ev, filePath, isDir) {
 
 function closeCtxMenu() { if (ctxMenuEl) { ctxMenuEl.remove(); ctxMenuEl = null; } }
 
+// Project entry files (Vite/React) — opening these with dev server running
+// auto-switches the central pane to the live Preview Web. Source still
+// reachable via Editor toggle.
+const PROJECT_ENTRY_FILES = ["index.html", "src/main.tsx", "src/main.ts", "src/index.tsx"];
+function isProjectEntryFile(path) {
+  if (!path || typeof PROJECT_ROOT !== "string" || !PROJECT_ROOT) return false;
+  const root = PROJECT_ROOT.replace(/\/+$/, "");
+  return PROJECT_ENTRY_FILES.some(rel => path === root + "/" + rel);
+}
+
 // ── Tabs ──
 async function openFile(filePath) {
   const existing = codeTabs.find(t => t.path === filePath);
@@ -7572,6 +7622,12 @@ async function openFile(filePath) {
     const name = filePath.split("/").pop();
     codeTabs.push({ path: filePath, name, content: data.content || "" });
     activateTab(filePath);
+    // First-open of a Vite/React entry file with dev running → show the live app,
+    // not the static HTML/main.tsx source. Source is one click away on Editor toggle.
+    if (isProjectEntryFile(filePath) && typeof isDevModeRunning === "function" && isDevModeRunning()) {
+      try { setPreviewState({ mode: "dev" }); } catch {}
+      try { setCodeCenterView("preview"); } catch {}
+    }
   } catch {}
 }
 
@@ -7615,6 +7671,13 @@ async function openFileFromAgent(filePath) {
   }
   renderTabs();
   renderEditor();
+  // Same auto-switch policy as manual openFile: only on FIRST open of an entry
+  // file with dev running. If the agent edits index.html later, HMR already
+  // reflects the change in the existing Preview pane.
+  if (isNew && isProjectEntryFile(filePath) && typeof isDevModeRunning === "function" && isDevModeRunning()) {
+    try { setPreviewState({ mode: "dev" }); } catch {}
+    try { setCodeCenterView("preview"); } catch {}
+  }
 }
 
 function activateTab(filePath) {
@@ -7828,7 +7891,7 @@ function setCodeCenterView(view) {
       ch.style.display = "none";
     });
     if (btnEditor) { btnEditor.style.background = "transparent"; btnEditor.style.color = "var(--text-muted)"; }
-    if (btnPreview) { btnPreview.style.background = "#a855f7"; btnPreview.style.color = "white"; }
+    if (btnPreview) { btnPreview.style.background = "#a855f7"; btnPreview.style.color = "white"; btnPreview.classList.remove("center-preview-live"); btnPreview.title = "Preview"; }
     _codeCenterCurrentView = "preview";
     initPreviewPane();
   } else {
@@ -7849,6 +7912,8 @@ function setCodeCenterView(view) {
     if (btnEditor) { btnEditor.style.background = "#a855f7"; btnEditor.style.color = "white"; }
     if (btnPreview) { btnPreview.style.background = "transparent"; btnPreview.style.color = "var(--text-muted)"; }
     _codeCenterCurrentView = "editor";
+    // Coming back to editor while dev is up → re-pulse Preview to advertise the live app
+    if (typeof renderDevServerUI === "function") renderDevServerUI();
   }
 }
 
