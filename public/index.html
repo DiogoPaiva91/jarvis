@@ -4532,6 +4532,34 @@ function openProjectBrief() {
 let devServerState = { running: false, url: null, port: null };
 let devServerPollTimer = null;
 
+// Match dev-server commands the agent might run via Bash. Anchored to start
+// of the command line so we don't false-positive on `git log dev` or similar.
+const DEV_SERVER_CMD_RE = /(^|[\s;&|]|&&|\|\|)(npm\s+(run\s+)?dev|npm\s+start|pnpm\s+(run\s+)?dev|pnpm\s+start|yarn\s+(run\s+)?dev|yarn\s+start|npx\s+vite|npx\s+next\s+dev|vite(\s|$)|next\s+dev)\b/;
+let _agentDevStartInflight = false;
+async function maybeRegisterAgentDevServer(rawCmd) {
+  if (!rawCmd || typeof rawCmd !== "string") return;
+  if (!DEV_SERVER_CMD_RE.test(rawCmd)) return;
+  if (_agentDevStartInflight) return;
+  if (devServerState && devServerState.running) return;
+  if (typeof PROJECT_ROOT !== "string" || !PROJECT_ROOT) return;
+  _agentDevStartInflight = true;
+  try {
+    const r = await fetch("/api/devserver/start", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ path: PROJECT_ROOT }),
+    });
+    const d = await r.json().catch(() => ({}));
+    if (d && d.error) {
+      // Agent's Bash will still try; don't surface error to user.
+      return;
+    }
+    if (typeof startDevServerPoll === "function") startDevServerPoll();
+    if (typeof refreshDevServerState === "function") refreshDevServerState();
+  } catch {} finally {
+    _agentDevStartInflight = false;
+  }
+}
+
 async function refreshDevServerState() {
   const wasRunning = !!(devServerState && devServerState.running);
   const wasUrl = devServerState && devServerState.url;
@@ -4540,21 +4568,43 @@ async function refreshDevServerState() {
     const d = await r.json();
     devServerState = d || { running: false };
   } catch { devServerState = { running: false }; }
-  // Transition false→true with URL ready: offer Preview switch (toast).
-  // Skip if center already showing preview, or if not in code mode.
+  // Transition false→true with URL ready: auto-switch to Preview Web (with flag)
+  // and surface a persistent toast as fallback. Skip if center already preview,
+  // or not in code mode.
   const justBecameReady = !wasRunning && devServerState.running && devServerState.url;
   const justGotUrl      = wasRunning && !wasUrl && devServerState.url; // running but URL came later
-  if ((justBecameReady || justGotUrl) && typeof showToast === "function") {
+  if (justBecameReady || justGotUrl) {
     const codeMode = document.getElementById("mode-code");
     const inCode = codeMode && codeMode.style.display !== "none";
     const alreadyPreview = (typeof _codeCenterCurrentView !== "undefined") && _codeCenterCurrentView === "preview";
     if (inCode && !alreadyPreview) {
       const port = devServerState.port || "";
-      showToast("Dev server pronto" + (port ? " em :" + port : "") + " — clique pra abrir Preview", {
-        kind: "info",
-        duration: 6000,
-        onClick: () => { try { setCodeCenterView("preview"); } catch {} },
-      });
+      // Flag: localStorage["jarvis.autoPreview"] !== "false" → auto-switch enabled (default ON).
+      let autoPreview = true;
+      try { autoPreview = localStorage.getItem("jarvis.autoPreview") !== "false"; } catch {}
+      if (autoPreview) {
+        setTimeout(() => {
+          try {
+            // Re-check guards at fire time — user may have switched modes/views.
+            const cm = document.getElementById("mode-code");
+            const stillCode = cm && cm.style.display !== "none";
+            const stillEditor = (typeof _codeCenterCurrentView !== "undefined") && _codeCenterCurrentView !== "preview";
+            if (stillCode && stillEditor && devServerState.running && devServerState.url) {
+              // Make sure preview pane is in dev mode pointing at the running URL.
+              try { setPreviewState({ mode: "dev" }); } catch {}
+              setCodeCenterView("preview");
+            }
+          } catch {}
+        }, 1500);
+      }
+      if (typeof showToast === "function") {
+        showToast("Dev server pronto" + (port ? " em :" + port : "") + " — clique pra abrir Preview", {
+          kind: "info",
+          duration: 30000,
+          closeButton: true,
+          onClick: () => { try { setPreviewState({ mode: "dev" }); } catch {} try { setCodeCenterView("preview"); } catch {} },
+        });
+      }
     }
   }
   renderDevServerUI();
@@ -9145,8 +9195,8 @@ function initCodeChatPanel() {
         + "- Ao usar Write ou Edit, o painel central abre AUTOMATICAMENTE o arquivo modificado e dá foco. Você não precisa pedir ao usuário pra abrir manualmente.\n"
         + "- Arquivos .md abrem em aba Preview (markdown renderizado); .ts/.tsx/.js/.jsx/.css/.html etc. abrem em aba Source com syntax highlight.\n"
         + "- Durante a execução do Write/Edit, a aba do arquivo pulsa (highlight roxo) pra sinalizar 'editando ao vivo'.\n"
-        + "- Se você rodar um servidor de desenvolvimento (`npm run dev`, `pnpm dev`, etc.) e ele subir com sucesso, aparece um toast clicável 'Dev server pronto — abrir Preview' que troca o painel central pro Preview Web (Vite/HMR).\n"
-        + "- Trabalhe normalmente; o usuário acompanha tudo ao vivo. NÃO afirme que 'não controla o editor' — você controla via Write/Edit/Bash.\n";
+        + "- DEV SERVER: quando você rodar `npm run dev` / `pnpm dev` / `yarn dev` / `vite` / `next dev` / `npm start` via Bash, o Hub detecta automaticamente e registra o servidor (mesmo se sua porta padrão estiver em uso, Vite/Next caem pra próxima — 5174, 5175, etc.). Em ~1.5s após o servidor ficar pronto, o painel central troca SOZINHO pro Preview Web do app rodando, e um toast clicável aparece como fallback. Não precisa pedir 'abra o navegador' — o usuário já vê o app rodando ao vivo.\n"
+        + "- Trabalhe normalmente; o usuário acompanha tudo ao vivo. NÃO afirme que 'não controla o editor' nem 'não controla o preview' — você controla ambos via Write/Edit/Bash.\n";
       if (projectMetaCache) {
         const m = projectMetaCache;
         s += "\nCONTEXTO DO PROJETO:\n";
@@ -9552,6 +9602,12 @@ function createChatPanel(cfg) {
             if (fp) {
               const t = codeTabs.find(x => x.path === fp);
               if (t) { t.streaming = true; renderTabs(); }
+            }
+          }
+          if (isCodePanel && evt.name === "Bash") {
+            const cmd = (evt.input && evt.input.command) || "";
+            if (typeof maybeRegisterAgentDevServer === "function") {
+              maybeRegisterAgentDevServer(cmd);
             }
           }
         }
@@ -11168,13 +11224,15 @@ function _toastContainer() {
 
 function showToast(msg, kindOrOpts) {
   // Backwards compat: showToast("msg") → success
-  // showToast("msg", "error") or showToast("msg", { kind:"warn", duration:5000, onClick: fn })
-  let kind = "success", duration = 3500, onClick = null;
+  // showToast("msg", "error") or showToast("msg", { kind:"warn", duration:5000, onClick: fn, sticky:true, closeButton:true })
+  let kind = "success", duration = 3500, onClick = null, sticky = false, closeButton = false;
   if (typeof kindOrOpts === "string") kind = kindOrOpts;
   else if (kindOrOpts && typeof kindOrOpts === "object") {
     kind = kindOrOpts.kind || "success";
     if (typeof kindOrOpts.duration === "number") duration = kindOrOpts.duration;
     if (typeof kindOrOpts.onClick === "function") onClick = kindOrOpts.onClick;
+    if (kindOrOpts.sticky) sticky = true;
+    if (kindOrOpts.closeButton) closeButton = true;
   }
   const palette = {
     success: { bg: "#16a34a", icon: "✓" },
@@ -11190,8 +11248,13 @@ function showToast(msg, kindOrOpts) {
     + "box-shadow:0 8px 24px rgba(0,0,0,0.35);max-width:380px;pointer-events:auto;cursor:pointer;"
     + "display:flex;align-items:flex-start;gap:8px;opacity:0;transform:translateX(20px);"
     + "transition:opacity .15s,transform .15s";
-  t.innerHTML = '<span style="color:' + p.bg + ';font-weight:700;line-height:1;font-size:13px">' + p.icon + '</span>'
-    + '<span style="flex:1;word-break:break-word">' + (msg || "").toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>") + '</span>';
+  const safeMsg = (msg || "").toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\n/g,"<br>");
+  let inner = '<span style="color:' + p.bg + ';font-weight:700;line-height:1;font-size:13px">' + p.icon + '</span>'
+    + '<span style="flex:1;word-break:break-word">' + safeMsg + '</span>';
+  if (closeButton) {
+    inner += '<span data-toast-close style="color:var(--text-muted);font-size:14px;line-height:1;padding:0 2px;cursor:pointer;align-self:center" title="Fechar">×</span>';
+  }
+  t.innerHTML = inner;
   c.appendChild(t);
   // Animate in
   requestAnimationFrame(() => { t.style.opacity = "1"; t.style.transform = "translateX(0)"; });
@@ -11199,10 +11262,16 @@ function showToast(msg, kindOrOpts) {
     t.style.opacity = "0"; t.style.transform = "translateX(20px)";
     setTimeout(() => { try { t.remove(); } catch {} }, 200);
   };
+  if (closeButton) {
+    const closeEl = t.querySelector("[data-toast-close]");
+    if (closeEl) {
+      closeEl.onclick = (e) => { e.stopPropagation(); dismiss(); };
+    }
+  }
   t.onclick = onClick
     ? () => { try { onClick(); } catch {} dismiss(); }
     : dismiss;
-  setTimeout(dismiss, duration);
+  if (!sticky) setTimeout(dismiss, duration);
   return dismiss;
 }
 
