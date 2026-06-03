@@ -15,6 +15,18 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    * { scrollbar-width: thin; scrollbar-color: var(--accent) transparent; }
+    *::-webkit-scrollbar { width: 10px; height: 10px; }
+    *::-webkit-scrollbar-track { background: transparent; }
+    *::-webkit-scrollbar-thumb {
+      background: var(--accent);
+      border-radius: 8px;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+    }
+    *::-webkit-scrollbar-thumb:hover { background: var(--accent-strong); background-clip: padding-box; }
+    *::-webkit-scrollbar-corner { background: transparent; }
+
     :root {
       --bg: #121212;
       --surface: #1F1F1F;
@@ -223,7 +235,7 @@
     }
     .conv-list::-webkit-scrollbar { width: 4px; }
     .conv-list::-webkit-scrollbar-track { background: transparent; }
-    .conv-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    .conv-list::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
 
     .conv-item {
       display: flex; align-items: center; gap: 8px;
@@ -306,7 +318,7 @@
     }
     .messages::-webkit-scrollbar { width: 6px; }
     .messages::-webkit-scrollbar-track { background: transparent; }
-    .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    .messages::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
 
     .msg {
       max-width: 75%; padding: 14px 18px; border-radius: 16px;
@@ -627,20 +639,44 @@
     }
     .center-view-tab:hover { color: var(--text); }
     .center-view-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+    #codeCenterViewToggle {
+      position: absolute; left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      display: flex; gap: 2px; z-index: 5;
+    }
+    @container codeBar (max-width: 720px) {
+      #codeCenterViewToggle {
+        position: static; transform: none;
+        order: -1; flex-basis: 100%;
+        justify-content: center;
+      }
+    }
 
     /* Supabase-style project toolbar buttons: flat, quiet, uniform chrome */
     .pbar-btn {
       display: inline-flex; align-items: center; gap: 6px;
-      background: transparent; border: 1px solid var(--border);
+      background: transparent; border: 1px solid transparent;
       color: var(--text-dim); padding: 3px 10px; border-radius: 6px;
       cursor: pointer; font-size: 11px; line-height: 1; white-space: nowrap;
       transition: background 0.12s, color 0.12s, border-color 0.12s;
     }
-    .pbar-btn:hover { background: var(--surface2); color: var(--text); border-color: var(--text-muted); }
+    .pbar-btn:hover { background: var(--surface2); color: var(--text); }
     .pbar-btn:active { background: var(--surface); }
-    .pbar-btn.is-on { color: var(--accent); border-color: var(--accent); background: var(--accent-soft); }
+    .pbar-btn.is-on { color: var(--accent); background: var(--accent-soft); }
     .pbar-btn.is-picking { color: #fff; border-color: #ec4899; background: #ec4899; }
     .pbar-btn.is-picking:hover { background: #ec4899; color: #fff; border-color: #ec4899; }
+    /* Segmented control (device breakpoints) — Supabase pattern: one connected box */
+    .pbar-seg { display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+    .pbar-seg-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: transparent; border: none; border-left: 1px solid var(--border);
+      color: var(--text-dim); padding: 3px 10px; cursor: pointer;
+      font-size: 11px; line-height: 1; white-space: nowrap;
+      transition: background 0.12s, color 0.12s;
+    }
+    .pbar-seg-btn:first-child { border-left: none; }
+    .pbar-seg-btn:hover { background: var(--surface2); color: var(--text); }
+    .pbar-seg-btn.is-on { background: var(--accent-soft); color: var(--accent); }
     /* Branch chip — subtle, accent text, no loud box */
     .pbar-branch {
       display: inline-flex; align-items: center; gap: 5px;
@@ -916,8 +952,26 @@
     }
     .cp-tool-btn:hover { background: var(--surface2); color: var(--text); }
     .cp-tool-btn--rec { background: #dc2626 !important; color: #fff !important; }
+    .cp-send-btn {
+      width: 32px; height: 32px; border-radius: 8px;
+      border: 1px solid transparent;
+      background: transparent; color: var(--accent); cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: background 0.12s, color 0.12s, border-color 0.12s, transform 0.07s, opacity 0.12s, box-shadow 0.12s;
+    }
+    .cp-send-btn:hover { background: var(--accent-soft); }
+    .cp-send-btn.is-ready { background: var(--accent); color: #06281b; border-color: var(--accent-strong); }
+    .cp-send-btn.is-ready:hover { background: var(--accent-strong); box-shadow: 0 2px 10px var(--accent-soft); }
+    .cp-send-btn:active { transform: scale(0.9); }
+    .cp-send-btn:disabled { opacity: 0.4; cursor: not-allowed; box-shadow: none; }
+    .cp-send-btn.is-stopping { background: var(--danger); color: #fff; border-color: transparent; }
+    .cp-send-btn.is-stopping:hover { background: color-mix(in srgb, var(--danger) 82%, #000); box-shadow: 0 2px 10px rgba(229,77,46,0.25); }
     .cp-box:focus-within { border-color: color-mix(in srgb, var(--accent) 55%, var(--border)); }
     .cp-model-btn { width: auto; padding: 0 9px; gap: 5px; font-size: 11px; font-weight: 500; white-space: nowrap; }
+    .cp-mode-toggle { background: transparent; border-color: transparent; color: var(--text-muted); font-weight: 500; }
+    .cp-mode-toggle:hover { background: var(--surface2); color: var(--text); }
+    .adr-save-btn { background: transparent; border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent); color: var(--accent); padding: 3px 10px; border-radius: var(--radius-sm); cursor: pointer; font-size: 11px; font-weight: 500; transition: background 0.12s, color 0.12s, border-color 0.12s; }
+    .adr-save-btn:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent-strong); }
     .mpop-group { margin-bottom: 10px; }
     .mpop-group:last-child { margin-bottom: 0; }
     .mpop-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
@@ -1358,14 +1412,8 @@
       <span class="header-dot" id="headerDot"></span>
       <span class="header-title" id="headerTitle">Jarvis</span>
       <span class="header-status" id="headerStatus">Claude Max - IA Principal</span>
-      <select class="model-select" id="modelSelect" onchange="changeModel(this.value)" title="Modelo Claude">
-        <option value="opus">Opus</option>
-        <option value="sonnet">Sonnet</option>
-        <option value="haiku">Haiku</option>
-      </select>
       <span class="readonly-badge" id="readonlyBadge" style="display:none">Somente leitura</span>
       <span class="bmad-toggle" id="bmadToggleChat" onclick="toggleBmad('chat')" title="Ativa agentes BMAD: Analyst, PM e Architect para planejar">&#127919; BMAD</span>
-      <span class="bmad-toggle" id="planToggleChat" onclick="toggleChatPlan(this)" title="Modo Plano: Jarvis planeja (read-only), nao edita arquivos" style="margin-left:4px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>Plan</span>
       <div class="history-toggle">
         <div class="history-pill full" id="historyPill" onclick="toggleHistoryDropdown()">
           <span id="historyPillIcon">&#128172;</span>
@@ -1406,20 +1454,22 @@
       </div>
       <div class="history-badge" id="historyBadge"></div>
       <div class="attach-bar" id="attachBar"></div>
-      <div class="input-wrap">
-        <button class="clip-btn" onclick="document.getElementById('fileInput').click()" title="Anexar arquivo">
-          <svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:currentColor"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
-        </button>
-        <input type="file" id="fileInput" multiple hidden accept="image/*,.pdf,.txt,.md,.csv,.json,.xml,.yaml,.yml,.js,.ts,.jsx,.tsx,.py,.java,.c,.cpp,.h,.hpp,.go,.rs,.rb,.php,.sh,.html,.css,.scss,.sql" onchange="handleFileSelect(this.files);this.value=''">
+      <input type="file" id="fileInput" multiple hidden accept="image/*,.pdf,.txt,.md,.csv,.json,.xml,.yaml,.yml,.js,.ts,.jsx,.tsx,.py,.java,.c,.cpp,.h,.hpp,.go,.rs,.rb,.php,.sh,.html,.css,.scss,.sql" onchange="handleFileSelect(this.files);this.value=''">
+      <div class="cp-box" style="border:1px solid var(--border);border-radius:14px;background:var(--bg);padding:10px 12px 8px">
         <textarea id="input" placeholder="Digite sua mensagem..." rows="1"
+          style="width:100%;background:transparent;border:none;color:var(--text);font-size:14px;line-height:1.5;font-family:inherit;resize:none;outline:none;max-height:200px;min-height:24px;overflow-y:auto"
           onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();send()}"
-          oninput="autoResize(this)"></textarea>
-        <button class="clip-btn" onclick="hubSavePromptUI()" title="Salvar última troca no hub (snippet)" style="margin-right:4px">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-        </button>
-        <button class="send-btn" id="sendBtn" style="background:var(--accent-strong)" onclick="onSendBtnClick()" title="Enviar">
-          <svg id="sendBtnIcon" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
+          oninput="autoResize(this);chatInputReady(this)"></textarea>
+        <div style="display:flex;align-items:center;gap:4px;margin-top:6px;flex-wrap:wrap;row-gap:6px">
+          <button class="cp-tool-btn" onclick="document.getElementById('fileInput').click()" title="Anexar arquivo"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+          <button class="cp-tool-btn" onclick="hubSavePromptUI()" title="Salvar última troca no hub (snippet)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+          <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto">
+            <span class="bmad-toggle cp-mode-toggle" id="planToggleChat" onclick="toggleChatPlan(this)" title="Modo Plano: Jarvis planeja (read-only), nao edita arquivos" style="margin:0;padding:6px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>Plan</span>
+            <select id="modelSelect" onchange="changeModel(this.value);updateChatModelLabel()" style="display:none"><option value="opus">Opus</option><option value="sonnet">Sonnet</option><option value="haiku">Haiku</option></select>
+            <button type="button" class="cp-tool-btn cp-model-btn" id="chatModelBtn" title="Modelo Claude" onclick="openChatModelPopover(this)"><span id="chatModelLbl">Opus</span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>
+            <button id="sendBtn" class="cp-send-btn" onclick="onSendBtnClick()" title="Enviar"><svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg></button>
+          </div>
+        </div>
       </div>
       <div class="token-counter" id="tokenCounter"></div>
     </div>
@@ -1467,8 +1517,8 @@
     <!-- Code Main (editor + terminal) -->
     <div style="flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden">
       <!-- Project quick-bar -->
-      <div id="codeProjectBar" style="position:relative;display:flex;align-items:center;gap:10px;padding:5px 12px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:11px;flex-wrap:wrap">
-        <div id="codeCenterViewToggle" style="position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);display:flex;gap:2px;z-index:5">
+      <div id="codeProjectBar" style="position:relative;display:flex;align-items:center;gap:10px;padding:5px 12px;background:var(--surface2);border-bottom:1px solid var(--border);font-size:11px;flex-wrap:wrap;container-type:inline-size;container-name:codeBar">
+        <div id="codeCenterViewToggle">
           <button id="centerViewEditorBtn" onclick="setCodeCenterView('editor')" class="center-view-tab active">Editor</button>
           <button id="centerViewPreviewBtn" onclick="setCodeCenterView('preview')" class="center-view-tab">Preview</button>
           <button id="centerViewCanvasBtn" onclick="setCodeCenterView('canvas')" title="Ver todas as telas/componentes" class="center-view-tab">&#127912; Canvas</button>
@@ -1580,9 +1630,11 @@
       <div id="codeChatPanel" style="flex:1;min-height:0;display:block;overflow:hidden"></div>
       <div id="codePreviewPanel" style="flex:1;min-height:0;display:none;flex-direction:column;background:var(--bg)">
         <div style="display:flex;align-items:center;gap:6px;padding:8px;border-bottom:1px solid var(--border);background:var(--surface);flex-wrap:wrap">
-          <button onclick="setPreviewBreakpoint('mobile')" id="bpMobile" class="pbar-btn" title="Mobile (375px)">&#128241; 375</button>
-          <button onclick="setPreviewBreakpoint('tablet')" id="bpTablet" class="pbar-btn" title="Tablet (768px)">&#128250; 768</button>
-          <button onclick="setPreviewBreakpoint('desktop')" id="bpDesktop" class="pbar-btn" title="Desktop (100%)">&#128187; 100%</button>
+          <div class="pbar-seg">
+            <button onclick="setPreviewBreakpoint('mobile')" id="bpMobile" class="pbar-seg-btn" title="Mobile (375px)">&#128241; 375</button>
+            <button onclick="setPreviewBreakpoint('tablet')" id="bpTablet" class="pbar-seg-btn" title="Tablet (768px)">&#128250; 768</button>
+            <button onclick="setPreviewBreakpoint('desktop')" id="bpDesktop" class="pbar-seg-btn" title="Desktop (100%)">&#128187; 100%</button>
+          </div>
           <button id="previewModeBtn" onclick="togglePreviewMode()" class="pbar-btn" title="Alternar entre Dev (npm run dev) e Estatico (HTML)">Estatico</button>
           <button onclick="insertPickedRef()" class="pbar-btn" title="Inserir no chat a última referência pega (📎) — ex: pegar o modal no DS-FIPS e mandar pro chat deste projeto">&#128206;</button>
           <button id="previewBackBtn" onclick="previewNavBack()" class="pbar-btn" title="Voltar (history do navegador)" disabled style="display:none;opacity:0.45">&#8592;</button>
@@ -2737,18 +2789,18 @@ function renderSidebar() {
     document.getElementById("readonlyBadge").style.display = "none";
     document.getElementById("inputArea").classList.remove("disabled");
   }
-  document.getElementById("sendBtn").style.background = (orphan ? "#666" : (asst ? asst.color : "var(--accent-strong)"));
-
-  // Model selector: show for Claude assistants, hide for Ollama
+  // Model selector: show the composer model button for Claude assistants, hide for Ollama
   const modelSel = document.getElementById("modelSelect");
+  const modelBtn = document.getElementById("chatModelBtn");
   if (modelSel && asst) {
     if (asst.provider === "claude") {
-      modelSel.style.display = "";
       modelSel.value = asst.model || "opus";
-    } else {
-      modelSel.style.display = "none";
+      if (modelBtn) modelBtn.style.display = "";
+    } else if (modelBtn) {
+      modelBtn.style.display = "none";
     }
   }
+  updateChatModelLabel();
 
   // Profile
   document.getElementById("profileAvatar").textContent = state.profile.avatar;
@@ -3343,17 +3395,66 @@ function deleteAsst(id) {
 
 function setSendBtnMode(mode) {
   const btn = document.getElementById("sendBtn");
-  const icon = document.getElementById("sendBtnIcon");
-  if (!btn || !icon) return;
+  if (!btn) return;
   if (mode === "stop") {
-    btn.classList.add("stopping");
+    btn.classList.add("is-stopping");
+    btn.classList.remove("is-ready");
     btn.title = "Parar resposta";
-    icon.innerHTML = '<rect x="6" y="6" width="12" height="12" rx="2"/>';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:14px;height:14px;fill:currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>';
   } else {
-    btn.classList.remove("stopping");
+    btn.classList.remove("is-stopping");
     btn.title = "Enviar";
-    icon.innerHTML = '<path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>';
+    const inp = document.getElementById("input");
+    if (btn && inp) btn.classList.toggle("is-ready", !!inp.value.trim());
   }
+}
+
+function chatInputReady(el) {
+  if (typeof sending !== "undefined" && sending) return;
+  const btn = document.getElementById("sendBtn");
+  if (btn) btn.classList.toggle("is-ready", !!el.value.trim());
+}
+
+function updateChatModelLabel() {
+  const lbl = document.getElementById("chatModelLbl");
+  const ms = document.getElementById("modelSelect");
+  if (lbl && ms) lbl.textContent = MODEL_LABELS[ms.value] || ms.value;
+}
+
+function openChatModelPopover(btn) {
+  const existing = document.getElementById("modelPopover");
+  if (existing) { existing.remove(); return; }
+  const ms = document.getElementById("modelSelect");
+  if (!ms) return;
+  const checkSvg = '<svg class="mpop-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>';
+  const optRow = (val, text, cur) => '<button type="button" class="mpop-opt' + (val === cur ? " sel" : "") + '" data-val="' + val + '">' + escapeHtml(text) + checkSvg + '</button>';
+  const pop = document.createElement("div");
+  pop.id = "modelPopover";
+  pop.style.cssText = "position:fixed;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px;width:180px;z-index:9999;box-shadow:0 8px 30px rgba(0,0,0,0.4)";
+  pop.innerHTML = '<div class="mpop-group" data-target="model"><div class="mpop-label">Modelo</div>'
+    + ["opus", "sonnet", "haiku"].map(v => optRow(v, MODEL_LABELS[v], ms.value)).join("") + '</div>';
+  document.body.appendChild(pop);
+  const r = btn.getBoundingClientRect();
+  const pr = pop.getBoundingClientRect();
+  let top = r.top - pr.height - 8;
+  if (top < 8) top = r.bottom + 8;
+  let left = r.right - pr.width;
+  if (left < 8) left = 8;
+  pop.style.top = top + "px";
+  pop.style.left = left + "px";
+  pop.addEventListener("click", function(e) {
+    const opt = e.target.closest(".mpop-opt");
+    if (!opt) return;
+    ms.value = opt.getAttribute("data-val");
+    ms.dispatchEvent(new Event("change"));
+    pop.querySelectorAll(".mpop-opt").forEach(o => o.classList.toggle("sel", o === opt));
+    updateChatModelLabel();
+  });
+  setTimeout(() => {
+    const close = (e) => { if (!pop.contains(e.target) && e.target !== btn && !btn.contains(e.target)) { pop.remove(); document.removeEventListener("click", close); } };
+    document.addEventListener("click", close);
+  }, 100);
 }
 
 let chatPlanMode = false;
@@ -11477,7 +11578,7 @@ function createChatPanel(cfg) {
   const cpPlusSvg = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>';
   const cpPickSvg = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-dasharray:4 2.5;stroke-linecap:round"><rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/></svg>';
   const cpMicSvg = '<svg viewBox="0 0 24 24" style="width:16px;height:16px;fill:currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>';
-  const cpUpSvg = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:white"><path d="M12 4l-8 8h5v8h6v-8h5z"/></svg>';
+  const cpUpSvg = '<svg viewBox="0 0 24 24" style="width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>';
 
   // Header
   let headerExtra = "";
@@ -11522,19 +11623,20 @@ function createChatPanel(cfg) {
         +   attachBarHtml + fileInputHtml
         +   '<div class="cp-box" style="border:1px solid var(--border);border-radius:14px;background:var(--bg);padding:10px 12px 8px">'
         +     '<textarea id="' + pid + '_input" rows="1" placeholder="' + escapeHtml(cfg.inputPlaceholder || "Mensagem...") + '" style="width:100%;background:transparent;border:none;color:var(--text);font-size:14px;line-height:1.5;font-family:inherit;resize:none;outline:none;max-height:200px;min-height:24px;overflow-y:auto"></textarea>'
-        +     '<div style="display:flex;align-items:center;gap:4px;margin-top:6px">'
+        +     '<div style="display:flex;align-items:center;gap:4px;margin-top:6px;flex-wrap:wrap;row-gap:6px">'
         +       (showAttach ? '<button class="cp-tool-btn" onclick="document.getElementById(\'' + pid + '_file\').click()" title="Anexar arquivo">' + cpPlusSvg + '</button>' : '')
         +       '<button class="cp-tool-btn" onclick="togglePreviewPicker&&togglePreviewPicker()" title="Selecionar elemento no preview (botão-direito = sobe pro container/modal)">' + cpPickSvg + '</button>'
-        +       '<span style="flex:1"></span>'
-        +       '<span class="bmad-toggle" onclick="this.closest(\'[id]\').chatPanel.togglePlan(this)" title="Modo Plano: o agente planeja (read-only), nao edita arquivos" style="margin:0;padding:6px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>Plan</span>'
-        +       '<span class="bmad-toggle" data-qa-toggle onclick="this.closest(\'[id]\').chatPanel.toggleQa(this)" title="QA auto-test: ao terminar, testo o app no preview e tento corrigir os erros sozinho (loop)" style="margin:0;padding:6px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>QA</span>'
-        +       '<span class="bmad-toggle" data-qa-speed data-qa-extra onclick="cycleQaSpeed(this)" title="Velocidade do teste QA na tela — clique pra alternar" style="margin:0;padding:6px 8px;font-size:13px;display:none">🐢</span>'
-        +       '<span class="bmad-toggle" data-qa-extra onclick="qaTestNow()" title="Rodar o QA AGORA no preview atual (sem precisar editar código)" style="margin:0;padding:6px 9px;font-size:12px;display:none">▶ Testar</span>'
+        +       '<div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;justify-content:flex-end;margin-left:auto">'
+        +       '<span class="bmad-toggle cp-mode-toggle" onclick="this.closest(\'[id]\').chatPanel.togglePlan(this)" title="Modo Plano: o agente planeja (read-only), nao edita arquivos" style="margin:0;padding:6px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><path d="m3 17 2 2 4-4"/><path d="m3 7 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>Plan</span>'
+        +       '<span class="bmad-toggle cp-mode-toggle" data-qa-toggle onclick="this.closest(\'[id]\').chatPanel.toggleQa(this)" title="QA auto-test: ao terminar, testo o app no preview e tento corrigir os erros sozinho (loop)" style="margin:0;padding:6px 9px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:3px"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>QA</span>'
+        +       '<span class="bmad-toggle cp-mode-toggle" data-qa-speed data-qa-extra onclick="cycleQaSpeed(this)" title="Velocidade do teste QA na tela — clique pra alternar" style="margin:0;padding:6px 8px;font-size:13px;display:none">🐢</span>'
+        +       '<span class="bmad-toggle cp-mode-toggle" data-qa-extra onclick="qaTestNow()" title="Rodar o QA AGORA no preview atual (sem precisar editar código)" style="margin:0;padding:6px 9px;font-size:12px;display:none">▶ Testar</span>'
         +       (showModel ? '<select id="' + pid + '_model" style="display:none"><option value="opus">Opus</option><option value="sonnet">Sonnet</option><option value="haiku">Haiku</option></select>' : '')
         +       '<select id="' + pid + '_effort" style="display:none"><option value="low">⚡ Baixo</option><option value="medium">⚡ Médio</option><option value="high">⚡ Alto</option><option value="xhigh">⚡ Muito alto</option><option value="max">⚡ Máx</option></select>'
         +       '<button type="button" class="cp-tool-btn cp-model-btn" id="' + pid + '_modelbtn" title="Modelo e potência do raciocínio" onclick="openModelPopover(this,\'' + pid + '\')"><span id="' + pid + '_modellbl">Opus</span><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button>'
         +       '<button class="cp-tool-btn" id="' + pid + '_mic" onclick="cpToggleMic(\'' + pid + '\')" title="Falar (transcrever)">' + cpMicSvg + '</button>'
-        +       '<button id="' + pid + '_send" style="width:32px;height:32px;border-radius:8px;border:none;background:' + color + ';color:white;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">' + cpUpSvg + '</button>'
+        +       '<button id="' + pid + '_send" class="cp-send-btn" title="Enviar">' + cpUpSvg + '</button>'
+        +       '</div>'
         +     '</div>'
         +   '</div>'
         + '</div>')
@@ -11581,7 +11683,7 @@ function createChatPanel(cfg) {
   }
 
   // Auto-resize
-  inputEl.addEventListener("input", function() { this.style.height = "auto"; this.style.height = Math.min(this.scrollHeight, isCodePanel?200:(compact?60:100)) + "px"; });
+  inputEl.addEventListener("input", function() { this.style.height = "auto"; this.style.height = Math.min(this.scrollHeight, isCodePanel?200:(compact?60:100)) + "px"; if (isCodePanel && !panel.sending) sendBtn.classList.toggle("is-ready", !!this.value.trim()); });
   inputEl.addEventListener("keydown", function(e) { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); panel.send(); } });
   sendBtn.addEventListener("click", function() { if (panel.sending) panel.stop(); else panel.send(); });
 
@@ -11749,6 +11851,8 @@ function createChatPanel(cfg) {
     panel._abort = new AbortController();
     sendBtn.innerHTML = stopSvg;
     sendBtn.title = "Parar";
+    sendBtn.classList.remove("is-ready");
+    sendBtn.classList.add("is-stopping");
 
     // ── Status bar (working indicator) ──
     const statusEl = document.getElementById(pid + "_status");
@@ -11888,6 +11992,8 @@ function createChatPanel(cfg) {
     panel._abort = null;
     sendBtn.innerHTML = isCodePanel ? cpUpSvg : sendSvg;
     sendBtn.title = "Enviar";
+    sendBtn.classList.remove("is-stopping");
+    if (isCodePanel) sendBtn.classList.toggle("is-ready", !!(inputEl.value || "").trim());
     msgsEl.scrollTop = msgsEl.scrollHeight;
 
     if (cfg.onResponse) cfg.onResponse(result);
@@ -12025,7 +12131,7 @@ function renderAdrSuggestion(text) {
   window._adrTextCache[id] = text;
   return '<div style="margin-top:8px;padding:6px 10px;background:color-mix(in srgb, var(--accent) 8%, transparent);border:1px dashed color-mix(in srgb, var(--accent) 40%, transparent);border-radius:6px;display:flex;align-items:center;gap:8px;font-size:11px;color:var(--text-muted)">'
     + '<span>📌 Detectei uma decisão aqui.</span>'
-    + '<button onclick="prefillAdrFromBubble(\'' + id + '\')" style="background:var(--accent);border:none;color:white;padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px;margin-left:auto">💾 Salvar como ADR</button>'
+    + '<button onclick="prefillAdrFromBubble(\'' + id + '\')" class="adr-save-btn" style="margin-left:auto">💾 Salvar como ADR</button>'
     + '</div>';
 }
 
@@ -16270,17 +16376,6 @@ if (state.currentMode && state.currentMode !== "chat") {
   // handleL sits between editor and sidebar (next) → must be codeRight.
   handleR.setAttribute("data-resize", "codeLeft");
   handleL.setAttribute("data-resize", "codeRight");
-
-  try {
-    const KEY = "jarvis-hub:panelWidths";
-    const w = JSON.parse(localStorage.getItem(KEY) || "{}");
-    if ("codeLeft" in w || "codeRight" in w) {
-      const tmp = w.codeLeft;
-      w.codeLeft = w.codeRight;
-      w.codeRight = tmp;
-      localStorage.setItem(KEY, JSON.stringify(w));
-    }
-  } catch {}
 
   const frag = document.createDocumentFragment();
   frag.appendChild(chat);
