@@ -10970,7 +10970,7 @@ function initCodeChatPanel() {
   if (containerEl) containerEl.innerHTML = "";
   codeChatPanel = createChatPanel({
     containerId: "codeChatPanel",
-    name: "Nook Código",
+    name: "Nook",
     color: "var(--accent)",
     provider: "claude",
     model: getAsst("jarvis").model || "opus",
@@ -10983,7 +10983,7 @@ function initCodeChatPanel() {
     placeholder: "Pergunte sobre o projeto ou peça alterações",
     inputPlaceholder: "Pergunte sobre o código...",
     systemPromptFn: function() {
-      let s = "Você é o Nook Código, operando no projeto em " + PROJECT_ROOT + ".\nFerramentas disponíveis: Read, Edit, Write, Bash, Grep, Glob.\n"
+      let s = "Você é o Nook, operando no projeto em " + PROJECT_ROOT + ".\nFerramentas disponíveis: Read, Edit, Write, Bash, Grep, Glob.\n"
         + "\nINTEGRAÇÃO COM A UI DO HUB:\n"
         + "- Ao usar Write ou Edit, o painel central abre AUTOMATICAMENTE o arquivo modificado e dá foco. Você não precisa pedir ao usuário pra abrir manualmente.\n"
         + "- Arquivos .md abrem em aba Preview (markdown renderizado); .ts/.tsx/.js/.jsx/.css/.html etc. abrem em aba Source com syntax highlight.\n"
