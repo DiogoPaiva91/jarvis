@@ -6,7 +6,7 @@ Editor low-code in-app pra construir páginas sem escrever JSX. Vive 100% no `pu
 
 - Em **Code mode**, com qualquer projeto selecionado em `~/dev/projetos/`
 - Toggle: botão `🧱 Builder` no project bar **ou** atalho `Ctrl+B`
-- Não funciona em `~/dev/jarvis` (o próprio Hub) — só em projetos do user
+- Não funciona em `~/dev/nook` (o próprio Hub) — só em projetos do user
 
 ## Layout
 
@@ -35,7 +35,7 @@ Editor low-code in-app pra construir páginas sem escrever JSX. Vive 100% no `pu
 
 ## Page format
 
-Pages vivem em `<projeto>/jarvis-pages/<nome>.page.json`:
+Pages vivem em `<projeto>/nook-pages/<nome>.page.json`:
 
 ```json
 {
@@ -147,7 +147,7 @@ Detecta framework via `package.json`:
 
 | Framework | Output | Comportamento |
 |---|---|---|
-| Vite | `src/jarvis-pages/<name>.tsx` | + atualiza `src/jarvis-pages/index.ts` (re-exports) |
+| Vite | `src/nook-pages/<name>.tsx` | + atualiza `src/nook-pages/index.ts` (re-exports) |
 | Next.js | `src/app/<name>/page.tsx` | Vira rota direta. `home`/`index` → `/` |
 
 Se `components.json` existe (template vite-shadcn), Export é **shadcn-aware**:
@@ -166,13 +166,13 @@ Alternativa ao Export: copia um componente que renderiza `.page.json` em runtime
 
 Escreve:
 - `src/components/JBuilderPage.tsx` — renderer (~80 linhas TS)
-- `src/jarvis-pages/<name>.page.json` (cópia de cada página)
-- `src/jarvis-pages/index.ts` — re-exports JSON imports
+- `src/nook-pages/<name>.page.json` (cópia de cada página)
+- `src/nook-pages/index.ts` — re-exports JSON imports
 
 Uso no app:
 ```tsx
 import { JBuilderPage } from "@/components/JBuilderPage";
-import { home } from "@/jarvis-pages";
+import { home } from "@/nook-pages";
 
 export default function App() {
   return <JBuilderPage page={home} />;

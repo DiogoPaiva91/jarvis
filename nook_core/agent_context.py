@@ -12,7 +12,7 @@ o async semantic_search internamente.
 import asyncio
 import os
 from pathlib import Path
-from jarvis_core.obsidian_bridge import get_context_for_project, list_all
+from nook_core.obsidian_bridge import get_context_for_project, list_all
 
 # Modos que NÃO recebem contexto (chats triviais)
 MODES_WITHOUT_CONTEXT = {"chat"}
@@ -38,7 +38,7 @@ def read_user_profile() -> str:
 def _semantic_context(query: str) -> str:
     """Returns formatted hub context using semantic search; empty if unavailable."""
     try:
-        from jarvis_core.embeddings import semantic_search
+        from nook_core.embeddings import semantic_search
     except Exception:
         return ""
     try:
@@ -62,7 +62,7 @@ def _semantic_context(query: str) -> str:
 
 async def _semantic_context_async(query: str) -> str:
     try:
-        from jarvis_core.embeddings import semantic_search
+        from nook_core.embeddings import semantic_search
         results = await semantic_search(query, top_k=4, min_score=0.55)
     except Exception:
         return ""

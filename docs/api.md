@@ -1,9 +1,9 @@
 # API Reference
 
-Endpoints expostos pelo Jarvis Hub. 2 portas:
+Endpoints expostos pelo Nook Studio. 2 portas:
 
 - **`:3000`** — `server.js` (Node, monolito). Rotas `/api/*` + frontend estático + `/preview/<projeto>/<arquivo>`.
-- **`:3001`** — `jarvis_core/server.py` (Python aiohttp, sidecar). Acessível via proxy `/api/core/*` no Hub.
+- **`:3001`** — `nook_core/server.py` (Python aiohttp, sidecar). Acessível via proxy `/api/core/*` no Hub.
 
 ## Autenticação
 

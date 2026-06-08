@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from jarvis_core import obsidian_bridge as ob
+from nook_core import obsidian_bridge as ob
 
 
 def test_slug():
@@ -17,7 +17,7 @@ def test_list_all_empty(tmp_hub):
 def test_write_adr_no_template(tmp_hub):
     path_rel = ob.write_adr(
         title="Adotar pytest",
-        projeto="jarvis",
+        projeto="nook",
         contexto="Testes ad-hoc não escalam",
         decisao="Usar pytest pra unit",
         consequencias="Mais arquivos mas confiança maior",
@@ -27,7 +27,7 @@ def test_write_adr_no_template(tmp_hub):
     assert full.exists()
     body = full.read_text()
     assert "## Decisão\nUsar pytest pra unit" in body
-    assert "projeto: jarvis" in body
+    assert "projeto: nook" in body
     assert "tags: [adr, decisao]" in body
 
 
@@ -41,7 +41,7 @@ def test_write_adr_with_template(tmp_hub):
     )
     path_rel = ob.write_adr(
         title="Usar uv ao invés de pip",
-        projeto="jarvis",
+        projeto="nook",
         contexto="pip não funciona sem python3-venv",
         decisao="uv standalone resolve sem sudo",
         consequencias="binário extra em ~/.local/bin",
@@ -55,7 +55,7 @@ def test_write_adr_with_template(tmp_hub):
     assert "uv standalone resolve sem sudo" in body
     assert "poetry, pipx" in body
     # Custom frontmatter key inserted
-    assert "projeto: jarvis" in body
+    assert "projeto: nook" in body
 
 
 def test_write_snippet(tmp_hub):

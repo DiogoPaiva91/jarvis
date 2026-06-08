@@ -13,7 +13,7 @@ if str(ROOT) not in sys.path:
 @pytest.fixture
 def tmp_hub(tmp_path, monkeypatch):
     """Redirect obsidian_bridge.HUB and related paths to a tmp dir."""
-    from jarvis_core import obsidian_bridge as ob
+    from nook_core import obsidian_bridge as ob
     monkeypatch.setattr(ob, "HUB", tmp_path)
     monkeypatch.setattr(ob, "MACROS_DIR", tmp_path / "macros")
     monkeypatch.setattr(ob, "HUB_PROJETOS_DIR", tmp_path / "projetos")

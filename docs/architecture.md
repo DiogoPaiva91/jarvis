@@ -1,4 +1,4 @@
-# Arquitetura — Jarvis Hub
+# Arquitetura — Nook Studio
 
 **Última atualização:** 2026-04-26
 
@@ -9,15 +9,15 @@
 | Camada | Tecnologia | Localização |
 |---|---|---|
 | HTTP server | Node `http` nativo, roteamento manual por `req.url` | `server.js` (~3500 linhas) |
-| DB | `better-sqlite3` WAL | `lib/db.js` → `data/jarvis.db` |
-| Sidecar IA | aiohttp + Claude Agent SDK em `:3001` | `jarvis_core/` |
+| DB | `better-sqlite3` WAL | `lib/db.js` → `data/nook.db` |
+| Sidecar IA | aiohttp + Claude Agent SDK em `:3001` | `nook_core/` |
 | UI | Vanilla HTML/CSS/JS single-file | `public/index.html` (~610 KB) |
 | Workers | Registry + bus SSE | `lib/workers/` |
 | Chat persistence | Conversations + snapshot + distill | `lib/chat/` |
-| BMAD | Markdown prompts + Python loader | `bmad/agents/`, `jarvis_core/bmad_loader.py` |
+| BMAD | Markdown prompts + Python loader | `bmad/agents/`, `nook_core/bmad_loader.py` |
 | Hub Obsidian | Vault em `~/dev/_hub`, exposto via `/api/hub/*` | fora do repo |
-| Voice | Whisper local | `jarvis_core/voice.py` |
-| Browser MCP | Puppeteer-core | `jarvis_core/browser.py` |
+| Voice | Whisper local | `nook_core/voice.py` |
+| Browser MCP | Puppeteer-core | `nook_core/browser.py` |
 
 ## 2. Topologia
 
@@ -36,7 +36,7 @@
                 │  - Rotas /api/*                       │
                 │  - SSE pra streams                    │
                 │  - Static files                       │
-                │  - SQLite (data/jarvis.db)            │
+                │  - SQLite (data/nook.db)            │
                 └────────┬──────────────┬──────────────┘
                          │              │
                   /api/core/*           │ spawn (newproj, npm run dev, BMAD via sidecar)
@@ -44,7 +44,7 @@
                          ▼              ▼
                 ┌────────────────┐   ┌──────────────────┐
                 │ Sidecar Python │   │ Filesystem       │
-                │ jarvis_core    │   │ ~/dev/projetos/* │
+                │ nook_core    │   │ ~/dev/projetos/* │
                 │ :3001          │   │ ~/dev/_hub/*     │
                 │ Claude SDK     │   │ uploads/*        │
                 └────────┬───────┘   └──────────────────┘
@@ -68,9 +68,9 @@
 
 | Onde | O quê |
 |---|---|
-| `localStorage["jarvis-hub:settings"]` | Tema, accent color, voice model, history limit |
-| `localStorage["jarvis-hub:panelWidths"]` | Larguras dos resize handles |
-| `localStorage["jarvis-hub:previewConfig"]` | Por-projeto: breakpoint, entry, mode (static/dev) |
+| `localStorage["nook-hub:settings"]` | Tema, accent color, voice model, history limit |
+| `localStorage["nook-hub:panelWidths"]` | Larguras dos resize handles |
+| `localStorage["nook-hub:previewConfig"]` | Por-projeto: breakpoint, entry, mode (static/dev) |
 | `state.conversations` (memory + SQLite via `/api/conversations`) | Conversas com kind="chat"\|"code:<projeto>"\|... |
 | `Builder.*` (memory) | Estado do Builder enquanto aberto |
 
@@ -93,9 +93,9 @@ BMAD agents rodam no sidecar Python via Claude Agent SDK. Razões:
 
 Roda em `localhost`, uso pessoal. Adicionar auth = complexidade morta. Path security é a única defesa: tudo precisa começar com `/home/diogo`.
 
-### 3.6 Project metadata via `.jarvis-project.json`
+### 3.6 Project metadata via `.nook-project.json`
 
-Cada projeto criado pelo modal grava `<projeto>/.jarvis-project.json` com `{name, kind, description, stack, bmad, createdAt, hubNote}`. Lido por:
+Cada projeto criado pelo modal grava `<projeto>/.nook-project.json` com `{name, kind, description, stack, bmad, createdAt, hubNote}`. Lido por:
 - Code mode (frontend) — injeta no system prompt do code chat
 - BMAD on-demand — usa pra montar prompt do agente
 - Builder — não usa diretamente, mas detecta framework via `package.json`
@@ -115,7 +115,7 @@ modal → /api/projects/create (SSE)
         - cli → scaffoldNodeCli (tsx + commander)
         - api → scaffoldNodeApi (Express + TS)
         - lib → scaffoldNodeLib (tsup)
-     2. write .jarvis-project.json
+     2. write .nook-project.json
      3. populate README (replace placeholders)
      4. write CLAUDE.md (instruções pro Claude Code) ← novo
      5. create _hub/projetos/<nome>.md (Obsidian note)
@@ -129,11 +129,11 @@ modal → /api/projects/create (SSE)
 User edita no Builder (Ctrl+B)
   → builderUpdateProp/builderInsertAt/etc mutam Builder.page
   → builderRender re-renderiza iframe canvas
-  → Ctrl+S ou autosave (8s) → /api/fs write → <projeto>/jarvis-pages/<name>.page.json
+  → Ctrl+S ou autosave (8s) → /api/fs write → <projeto>/nook-pages/<name>.page.json
 
 Pra usar no app real do user:
   Opção A — Export to JSX (estático):
-    📤 Export → builderEmitJsx → src/jarvis-pages/<name>.tsx
+    📤 Export → builderEmitJsx → src/nook-pages/<name>.tsx
     User edita o JSX se quiser. Re-Export sobrescreve.
 
   Opção B — Install Runtime (live binding):
@@ -162,7 +162,7 @@ Cleanup automático em SIGINT/SIGTERM/exit do server.js
 ```
 🤖 BMAD ▾ → dropdown com 7 agentes
 Click → /api/projects/run-bmad { path, agent } (SSE)
-  → load <projeto>/.jarvis-project.json + docs/brief.md
+  → load <projeto>/.nook-project.json + docs/brief.md
   → POST /chat (sidecar) com:
        - agent: <name>
        - mode: "codigo"
@@ -180,7 +180,7 @@ Click → /api/projects/run-bmad { path, agent } (SSE)
 |---|---|---|
 | `server.js` | 3500 | Tudo do backend Node |
 | `public/index.html` | ~16k | Tudo do frontend |
-| `jarvis_core/server.py` | 1300 | Sidecar Python (chat/hub/macros/browser/voice) |
+| `nook_core/server.py` | 1300 | Sidecar Python (chat/hub/macros/browser/voice) |
 | `lib/db.js` | 200 | Schema + migrations |
 | `lib/workers/registry.js` | 150 | Worker registry |
 | `lib/chat/conversations.js` | 250 | Persistência de conversas |

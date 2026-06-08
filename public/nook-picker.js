@@ -1,6 +1,6 @@
 (function () {
-  if (window.__jarvisPickerLoaded) return;
-  window.__jarvisPickerLoaded = true;
+  if (window.__nookPickerLoaded) return;
+  window.__nookPickerLoaded = true;
 
   let active = false;
   let overlayEl = null;
@@ -12,10 +12,10 @@
   function ensureOverlay() {
     if (overlayEl) return;
     overlayEl = document.createElement("div");
-    overlayEl.id = "__jarvis_picker_overlay";
+    overlayEl.id = "__nook_picker_overlay";
     overlayEl.style.cssText = "position:fixed;pointer-events:none;border:2px solid #ec4899;background:rgba(236,72,153,0.12);box-sizing:border-box;z-index:2147483646;border-radius:3px;display:none;transition:all 60ms ease-out";
     labelEl = document.createElement("div");
-    labelEl.id = "__jarvis_picker_label";
+    labelEl.id = "__nook_picker_label";
     labelEl.style.cssText = "position:fixed;background:#ec4899;color:white;padding:2px 6px;font:600 11px ui-monospace,monospace;border-radius:3px;z-index:2147483647;display:none;pointer-events:none;white-space:nowrap";
     document.body.appendChild(overlayEl);
     document.body.appendChild(labelEl);
@@ -196,14 +196,14 @@
     const rect = el.getBoundingClientRect();
     const classes = (el.className && typeof el.className === "string")
       ? el.className.split(/\s+/).filter(Boolean) : [];
-    // Sobe na árvore procurando data-jarvis-src (injetado pelo babel-jarvis-tag em DSs)
-    let jarvisSrc = null, jarvisEl = el;
-    while (jarvisEl && jarvisEl !== document.body) {
-      if (jarvisEl.getAttribute && jarvisEl.getAttribute("data-jarvis-src")) {
-        jarvisSrc = jarvisEl.getAttribute("data-jarvis-src");
+    // Sobe na árvore procurando data-nook-src (injetado pelo babel-nook-tag em DSs)
+    let nookSrc = null, nookEl = el;
+    while (nookEl && nookEl !== document.body) {
+      if (nookEl.getAttribute && nookEl.getAttribute("data-nook-src")) {
+        nookSrc = nookEl.getAttribute("data-nook-src");
         break;
       }
-      jarvisEl = jarvisEl.parentElement;
+      nookEl = nookEl.parentElement;
     }
     const payload = {
       tag: el.tagName.toLowerCase(),
@@ -217,18 +217,18 @@
       rect: { x: Math.round(rect.x), y: Math.round(rect.y), width: Math.round(rect.width), height: Math.round(rect.height) },
       pageUrl: location.href,
       screenshot: null,
-      jarvisSrc,
+      nookSrc,
     };
     // Disable picker UI immediately so user feedback is fast
     disable();
     payload.screenshot = await captureScreenshot(el);
-    try { window.parent.postMessage({ type: "jarvis-picker:picked", payload }, "*"); } catch (_) {}
+    try { window.parent.postMessage({ type: "nook-picker:picked", payload }, "*"); } catch (_) {}
   }
 
   function onKeyDown(e) {
     if (e.key === "Escape") {
       disable();
-      try { window.parent.postMessage({ type: "jarvis-picker:cancelled" }, "*"); } catch (_) {}
+      try { window.parent.postMessage({ type: "nook-picker:cancelled" }, "*"); } catch (_) {}
       return;
     }
     // ↑ sobe pro elemento PAI (ex: pra pegar o modal inteiro em vez do botão de dentro)
@@ -307,9 +307,9 @@
   window.addEventListener("message", (e) => {
     const d = e.data;
     if (!d || typeof d !== "object") return;
-    if (d.type === "jarvis-picker:enable") enable();
-    else if (d.type === "jarvis-picker:disable") disable();
+    if (d.type === "nook-picker:enable") enable();
+    else if (d.type === "nook-picker:disable") disable();
   });
 
-  try { window.parent.postMessage({ type: "jarvis-picker:ready" }, "*"); } catch (_) {}
+  try { window.parent.postMessage({ type: "nook-picker:ready" }, "*"); } catch (_) {}
 })();

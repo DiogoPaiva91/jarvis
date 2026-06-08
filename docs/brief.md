@@ -1,4 +1,4 @@
-# Project Brief — Jarvis Hub: Modo de Código
+# Project Brief — Nook Studio: Modo de Código
 
 **Autor:** Diogo (via Mary, analista de negócios)
 **Data:** 2026-04-24
@@ -8,7 +8,7 @@
 
 ## 1. Visão
 
-Evoluir o **Modo de Código** do Jarvis Hub de um chat simples com acesso à pasta local para uma **IDE no-code/low-code**, combinando a experiência visual do **Bubble.io** com a potência de agente de código do **Cursor / Claude Code**, usando **Claude (plano Max)** como motor de IA.
+Evoluir o **Modo de Código** do Nook Studio de um chat simples com acesso à pasta local para uma **IDE no-code/low-code**, combinando a experiência visual do **Bubble.io** com a potência de agente de código do **Cursor / Claude Code**, usando **Claude (plano Max)** como motor de IA.
 
 O diferencial proposto é entregar ao usuário **código real gerado e editável** — não um runtime proprietário como o Bubble — para que o produto construído possa sair da plataforma sem lock-in.
 
@@ -16,16 +16,16 @@ O diferencial proposto é entregar ao usuário **código real gerado e editável
 
 ## 2. Estado Atual (hoje)
 
-O Jarvis Hub já existe e roda localmente:
+O Nook Studio já existe e roda localmente:
 
 - Backend Node.js (`server.js` monolítico, ~39KB)
-- SQLite (`better-sqlite3`) em `data/jarvis.db`
+- SQLite (`better-sqlite3`) em `data/nook.db`
 - Frontend vanilla em `public/index.html` único
 - Workers e providers em `lib/workers/`
 - Puppeteer-core disponível
 
 **Modo de Código atual:**
-- Acessa a pasta local `/home/diogo/jarvis-hub`
+- Acessa a pasta local `/home/diogo/nook-hub`
 - Chat com contexto
 
 Nada além disso. Essa é a linha de base — tudo no brief é novo.
@@ -64,7 +64,7 @@ Hoje o no-coder tem dois mundos ruins:
 
 ## 5. Solução Proposta (alto nível)
 
-Transformar o Modo de Código do Jarvis Hub em uma IDE visual-first com 4 camadas, entregues **nesta ordem**:
+Transformar o Modo de Código do Nook Studio em uma IDE visual-first com 4 camadas, entregues **nesta ordem**:
 
 1. **Visual Builder (camada Bubble)** — arrastar componentes, editar props visualmente, ver o código real sendo gerado em tempo real.
 2. **Agente de Código + Chat com contexto de repo** — "faça X neste componente", o agente edita o arquivo certo; usuário vê o diff e aplica.
@@ -81,7 +81,7 @@ Motor de IA: **Claude via plano Max** (já disponível para o Diogo).
 
 Tradução operacional (a ser refinada pelo John no PRD):
 
-- **Fase 1 (uso próprio):** Diogo consegue construir uma feature nova do próprio Jarvis Hub usando o novo Modo de Código, sem escrever código manualmente, em tempo menor do que escreveria à mão.
+- **Fase 1 (uso próprio):** Diogo consegue construir uma feature nova do próprio Nook Studio usando o novo Modo de Código, sem escrever código manualmente, em tempo menor do que escreveria à mão.
 - **Fase 2 (venda):** N primeiros usuários pagos conseguem migrar um app Bubble simples para código real rodando fora da plataforma.
 
 ---
@@ -126,5 +126,5 @@ Tradução operacional (a ser refinada pelo John no PRD):
 ## 11. Próximos Passos
 
 1. **John (PM):** transformar este brief em `docs/prd.md` — épicos, requisitos funcionais/não-funcionais, critérios de aceitação da camada 1 (Visual Builder) e da feature-piloto (gerenciador de agents BMad).
-2. **Winston (Arquiteto):** após PRD, desenhar `docs/architecture.md` — como Next.js+Postgres convive com o Node+SQLite atual do Jarvis Hub, como o visual builder emite código Next.js, como o agente integra com o `server.js` atual.
+2. **Winston (Arquiteto):** após PRD, desenhar `docs/architecture.md` — como Next.js+Postgres convive com o Node+SQLite atual do Nook Studio, como o visual builder emite código Next.js, como o agente integra com o `server.js` atual.
 3. **Bob (Scrum Master):** quebrar em stories em `docs/stories/`.

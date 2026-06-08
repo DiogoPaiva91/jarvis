@@ -1,7 +1,7 @@
 """Carrega agentes BMAD locais como system prompts."""
 from pathlib import Path
 
-BMAD_PATH = Path.home() / "dev" / "jarvis" / "bmad" / "agents"
+BMAD_PATH = Path.home() / "dev" / "nook" / "bmad" / "agents"
 
 AGENTS = {
     "analyst":   "analyst.md",

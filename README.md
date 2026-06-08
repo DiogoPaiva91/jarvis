@@ -1,27 +1,35 @@
 # Nook Studio
 
-Workspace multi-modo: **Chat**, **Code** (com IDE visual estilo Bubble), **Cowork** (agentes em paralelo) e **Hub** (vault Obsidian em `~/dev/_hub`). Roda 100% local em `localhost:3000`. *(Codinome interno do repo: `jarvis`.)*
+Workspace de desenvolvimento multi-modo, 100% local: **Chat** (assistente), **Code** (IDE visual low-code estilo Bubble), **Cowork** (agentes em paralelo) e **Hub** (vault Obsidian em `~/dev/_hub`). Backend Node monolítico + sidecar Python; frontend single-file em vanilla JS. Tudo roda em `localhost:3000`.
+
+## Pré-requisitos
+
+- **Node** ≥ 18 e **Python** ≥ 3.10
+- **Ollama** (opcional) — embeddings do Hub e assistentes locais
+- **Chrome/Chromium** (opcional) — worker de browser via CDP
+- Variável `ANTHROPIC_API_KEY` no ambiente pro Claude Agent SDK (sidecar)
 
 ## Setup
 
 ```bash
-git clone https://github.com/DiogoPaiva91/jarvis.git ~/dev/jarvis
-cd ~/dev/jarvis
+git clone https://github.com/DiogoPaiva91/nook.git ~/dev/nook
+cd ~/dev/nook
 npm install
 python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt
-node server.js          # Hub UI em :3000
-python -m jarvis_core.server  # sidecar Python em :3001 (Claude Agent SDK + BMAD)
+
+node server.js               # Hub UI + API em :3000
+python -m nook_core.server   # sidecar Python em :3001 (Claude Agent SDK + BMAD) — opcional
 ```
 
-Abre `http://localhost:3000`.
+Atalho: `~/dev/bin/nook-launch.sh` sobe os dois com keepers que respawnam se cair. Abre `http://localhost:3000`.
 
 ## Estrutura
 
 ```
-jarvis/
+nook/
 ├── server.js            # Backend Node monolítico (~3000 linhas) — todas as rotas /api/*
 ├── public/index.html    # Frontend single-file (~600 KB) — todos os modos + Builder
-├── jarvis_core/         # Sidecar Python aiohttp (Claude Agent SDK)
+├── nook_core/         # Sidecar Python aiohttp (Claude Agent SDK)
 │   ├── server.py        # Endpoint /chat (SSE) + /diagnostics + /hub/*
 │   ├── bmad_loader.py   # Carrega prompts BMAD locais
 │   ├── browser.py       # MCP browser worker
@@ -33,7 +41,7 @@ jarvis/
 │   └── workers/         # Registry e bus pra Cowork
 ├── bmad/agents/         # 7 prompts BMAD (analyst/pm/architect/designer/dev/qa/sm)
 ├── docs/                # brief, prd, architecture, stories, builder, api
-└── data/jarvis.db       # SQLite (better-sqlite3) — conversas, workers, etc.
+└── data/nook.db       # SQLite (better-sqlite3) — conversas, workers, etc.
 ```
 
 ## Modos
@@ -64,7 +72,7 @@ Ao criar:
 1. `~/dev/bin/newproj` cria esqueleto + git init
 2. Scaffold do template (Vite+React+TS+Tailwind+shadcn ou outro)
 3. `npm install` streamado via SSE
-4. Grava `.jarvis-project.json` com metadata
+4. Grava `.nook-project.json` com metadata
 5. Popula README com Objetivo/Stack/Tipo
 6. Cria nota Obsidian + linka no `_hub/projetos/index.md`
 7. Escreve `CLAUDE.md` no projeto com instruções pra Claude Code
@@ -84,7 +92,7 @@ No project bar, `🤖 BMAD ▾` abre dropdown com 7 agentes:
 | Quinn (QA) | `docs/qa-plan.md` | Plano de QA |
 | Bob (SM) | `docs/sprint-1.md` | Plano de sprint |
 
-Cada um lê `.jarvis-project.json` + `docs/brief.md` (se existir) como contexto.
+Cada um lê `.nook-project.json` + `docs/brief.md` (se existir) como contexto.
 
 ## Dev server integrado
 
@@ -108,11 +116,11 @@ Veja [docs/builder.md](docs/builder.md) pra detalhes. TL;DR:
 
 ## Persistência
 
-- **Conversas**: `data/jarvis.db` via `lib/chat/conversations.js`
+- **Conversas**: `data/nook.db` via `lib/chat/conversations.js`
 - **Workers (Cowork)**: `lib/workers/registry.js` + bus
-- **Builder pages**: `<projeto>/jarvis-pages/*.page.json` (JSON vivo)
-- **Project metadata**: `<projeto>/.jarvis-project.json`
-- **Settings/preferences**: `localStorage` (`jarvis-hub:settings`, `jarvis-hub:panelWidths`, etc)
+- **Builder pages**: `<projeto>/nook-pages/*.page.json` (JSON vivo)
+- **Project metadata**: `<projeto>/.nook-project.json`
+- **Settings/preferences**: `localStorage` (`nook-hub:settings`, `nook-hub:panelWidths`, etc)
 - **Hub**: arquivos `.md` no vault Obsidian em `~/dev/_hub`
 
 ## Diagnóstico

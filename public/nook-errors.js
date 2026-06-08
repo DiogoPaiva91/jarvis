@@ -1,13 +1,13 @@
 (function () {
-  if (window.__jarvisErrorsLoaded) return;
-  window.__jarvisErrorsLoaded = true;
+  if (window.__nookErrorsLoaded) return;
+  window.__nookErrorsLoaded = true;
 
   function post(msg) { try { window.parent.postMessage(msg, "*"); } catch (_) {} }
 
   // ── Captura de erro (runtime + promises) ──
   window.addEventListener("error", function (e) {
     post({
-      type: "jarvis-app:error", level: "error",
+      type: "nook-app:error", level: "error",
       message: (e && e.message) || "Erro de script",
       source: (e && e.filename) || "", line: (e && e.lineno) || 0, col: (e && e.colno) || 0,
       stack: (e && e.error && e.error.stack) ? String(e.error.stack).slice(0, 4000) : "",
@@ -21,7 +21,7 @@
       msg = reason.message || JSON.stringify(reason).slice(0, 300);
       stack = reason.stack ? String(reason.stack).slice(0, 4000) : "";
     } else { msg = String(reason); }
-    post({ type: "jarvis-app:rejection", level: "error", message: "Promise rejeitada sem tratamento: " + msg, stack: stack, url: location.href, ts: Date.now() });
+    post({ type: "nook-app:rejection", level: "error", message: "Promise rejeitada sem tratamento: " + msg, stack: stack, url: location.href, ts: Date.now() });
   });
 
   // ── html2canvas (screenshot) ──
@@ -39,7 +39,7 @@
   }
 
   async function snapshot(id) {
-    var out = { type: "jarvis-app:snapshot", id: id, dataUrl: null, textLen: 0, url: location.href };
+    var out = { type: "nook-app:snapshot", id: id, dataUrl: null, textLen: 0, url: location.href };
     try {
       out.textLen = ((document.body && document.body.innerText) || "").trim().length;
       var h2c = await loadHtml2Canvas();
@@ -220,7 +220,7 @@
       var sel = txt ? ("text=" + txt.slice(0, 30)) : (selectorFor(el) || "");
       return { sel: sel, text: label.slice(0, 40) };
     });
-    post({ type: "jarvis-app:dom", id: id, inputs: inputs, buttons: buttons, bodyText: ((document.body && document.body.innerText) || "").trim().slice(0, 400) });
+    post({ type: "nook-app:dom", id: id, inputs: inputs, buttons: buttons, bodyText: ((document.body && document.body.innerText) || "").trim().slice(0, 400) });
   }
 
   // ── Teste CRUD completo (criar → marcar/flag → deletar → limpar) ──
@@ -429,7 +429,7 @@
     hideCursor();
     // RESTAURA os dados reais (desfaz tudo que o QA fez)
     try { localStorage.clear(); for (var kk in backup) localStorage.setItem(kk, backup[kk]); } catch (_) {}
-    post({ type: "jarvis-app:steps-result", id: id, kind: "crud", count: results.length, results: results, restored: true });
+    post({ type: "nook-app:steps-result", id: id, kind: "crud", count: results.length, results: results, restored: true });
   }
 
   // Acha um botão a partir de um texto livre (ex: "testa o botão excluir comprados").
@@ -508,31 +508,31 @@
       }
     } catch (e) { rec("teste do alvo", false, (e && e.message) || String(e)); }
     try { localStorage.clear(); for (var kk in backup) localStorage.setItem(kk, backup[kk]); } catch (_) {}
-    post({ type: "jarvis-app:steps-result", id: id, kind: "target", count: results.length, results: results, restored: true });
+    post({ type: "nook-app:steps-result", id: id, kind: "target", count: results.length, results: results, restored: true });
   }
 
   async function runAndReport(kind, id, steps, opts) {
     try {
       var actual = (kind === "smoke") ? buildSmokeSteps() : (steps || []);
       var results = await runSteps(actual, opts || {});
-      post({ type: "jarvis-app:steps-result", id: id, kind: kind, count: actual.length, results: results });
+      post({ type: "nook-app:steps-result", id: id, kind: kind, count: actual.length, results: results });
     } catch (e) {
-      post({ type: "jarvis-app:steps-result", id: id, kind: kind, count: 0, results: [], error: (e && e.message) || String(e) });
+      post({ type: "nook-app:steps-result", id: id, kind: kind, count: 0, results: [], error: (e && e.message) || String(e) });
     }
   }
 
   window.addEventListener("message", function (e) {
     var d = e.data;
     if (!d || typeof d !== "object") return;
-    if (d.type === "jarvis-app:snapshot-request") snapshot(d.id || "");
-    else if (d.type === "jarvis-app:describe") describe(d.id || "");
-    else if (d.type === "jarvis-app:crud") runCrudTest(d.id || "", d.opts || {});
-    else if (d.type === "jarvis-app:test-target") runTargetTest(d.id || "", d.target || {}, d.opts || {});
-    else if (d.type === "jarvis-app:smoke") runAndReport("smoke", d.id || "", null, d.opts || {});
-    else if (d.type === "jarvis-app:run-steps") runAndReport("plan", d.id || "", d.steps || [], d.opts || {});
+    if (d.type === "nook-app:snapshot-request") snapshot(d.id || "");
+    else if (d.type === "nook-app:describe") describe(d.id || "");
+    else if (d.type === "nook-app:crud") runCrudTest(d.id || "", d.opts || {});
+    else if (d.type === "nook-app:test-target") runTargetTest(d.id || "", d.target || {}, d.opts || {});
+    else if (d.type === "nook-app:smoke") runAndReport("smoke", d.id || "", null, d.opts || {});
+    else if (d.type === "nook-app:run-steps") runAndReport("plan", d.id || "", d.steps || [], d.opts || {});
   });
 
-  function ready() { post({ type: "jarvis-app:ready", url: location.href, ts: Date.now() }); }
+  function ready() { post({ type: "nook-app:ready", url: location.href, ts: Date.now() }); }
   if (document.readyState === "complete") ready();
   else window.addEventListener("load", ready);
 })();

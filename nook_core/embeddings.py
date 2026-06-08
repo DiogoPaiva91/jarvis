@@ -1,6 +1,6 @@
 """Semantic search no hub via embeddings locais (Ollama nomic-embed-text).
 
-Index armazenado em ~/.cache/jarvis/hub-index.json:
+Index armazenado em ~/.cache/nook/hub-index.json:
 {
   "model": "nomic-embed-text",
   "items": [
@@ -21,9 +21,9 @@ from typing import Any
 import aiohttp
 
 HUB = Path.home() / "dev" / "_hub"
-INDEX_PATH = Path.home() / ".cache" / "jarvis" / "hub-index.json"
+INDEX_PATH = Path.home() / ".cache" / "nook" / "hub-index.json"
 OLLAMA_URL = os.environ.get("OLLAMA_URL", "http://127.0.0.1:11434")
-EMBED_MODEL = os.environ.get("JARVIS_EMBED_MODEL", "nomic-embed-text")
+EMBED_MODEL = os.environ.get("NOOK_EMBED_MODEL", "nomic-embed-text")
 
 # Folders we index
 INDEX_FOLDERS = ["snippets", "padroes", "decisoes", "projetos", "conversas", "macros", "memorias", "planos", "usuario"]

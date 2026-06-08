@@ -95,7 +95,7 @@ async def _poll_loop() -> None:
                 if not text:
                     continue
                 # Try to resolve a pending browser_ask_user
-                from jarvis_core.browser import get_pending_question, submit_answer
+                from nook_core.browser import get_pending_question, submit_answer
                 pending = get_pending_question()
                 if pending and submit_answer(text):
                     await notify_async(f"✅ Recebido: _{text[:120]}_")

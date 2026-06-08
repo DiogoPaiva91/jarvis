@@ -1,4 +1,4 @@
-"""Bridge entre Jarvis e Obsidian vault (~/dev/_hub)."""
+"""Bridge entre Nook e Obsidian vault (~/dev/_hub)."""
 from pathlib import Path
 from datetime import date
 import re
@@ -319,7 +319,7 @@ VALID_BMAD_KINDS = set(BMAD_KIND_TO_AGENT.keys())
 
 
 def list_projetos() -> list[str]:
-    """List project directories under ~/dev/projetos and the special 'jarvis' itself."""
+    """List project directories under ~/dev/projetos and the special 'nook' itself."""
     out: list[str] = []
     if PROJETOS_DIR_BASE.exists():
         for p in sorted(PROJETOS_DIR_BASE.iterdir()):
@@ -335,7 +335,7 @@ def write_bmad_artifact(projeto: str, kind: str, content: str,
 
     Saves TWO copies:
       1. Inside the project itself: ~/dev/projetos/<projeto>/docs/<kind>.md
-         (or ~/dev/jarvis/docs/<kind>.md for the special "jarvis" project)
+         (or ~/dev/nook/docs/<kind>.md for the special "nook" project)
       2. A pointer/snapshot in the hub: _hub/projetos/<projeto>/<kind>.md
     """
     if kind not in VALID_BMAD_KINDS:
@@ -349,8 +349,8 @@ def write_bmad_artifact(projeto: str, kind: str, content: str,
 
     # Resolve project root on disk
     proj_root: Path
-    if projeto == "jarvis":
-        proj_root = Path.home() / "dev" / "jarvis"
+    if projeto == "nook":
+        proj_root = Path.home() / "dev" / "nook"
     else:
         proj_root = PROJETOS_DIR_BASE / projeto
     project_exists = proj_root.exists()
@@ -607,7 +607,7 @@ def save_macro(name: str, procedure: str, user_messages: list[str] | None = None
     if steps:
         lines = []
         for s in steps:
-            tool = (s.get("tool") or "").replace("mcp__jarvis-browser__", "")
+            tool = (s.get("tool") or "").replace("mcp__nook-browser__", "")
             ok = "✓" if s.get("ok", True) else "✗"
             inp = s.get("input") or {}
             inp_str = " ".join(f"{k}={v!r}" for k, v in inp.items())[:200]

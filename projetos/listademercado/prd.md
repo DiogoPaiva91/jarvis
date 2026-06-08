@@ -72,7 +72,7 @@ Mobile-first, mas funcional em desktop (mesmo layout, sem versão separada).
 
 ## 4. Technical Assumptions
 
-- **Repository:** monorepo (subpasta dentro de `projetos/` no Jarvis Hub).
+- **Repository:** monorepo (subpasta dentro de `projetos/` no Nook Studio).
 - **Architecture:** client-side puro, single-page, sem framework.
 - **Stack:** HTML5 + CSS3 (custom properties) + JS módulos ES.
 - **Persistência:** `localStorage` com chave `listademercado.v1`.

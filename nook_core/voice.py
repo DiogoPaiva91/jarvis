@@ -1,7 +1,7 @@
 """Voice transcription via faster-whisper (CPU-friendly).
 
 Carrega o modelo lazily na primeira chamada (model="base" por padrão, ~140MB).
-Override via JARVIS_WHISPER_MODEL=small|medium|large-v3 etc.
+Override via NOOK_WHISPER_MODEL=small|medium|large-v3 etc.
 """
 import asyncio
 import os
@@ -9,7 +9,7 @@ import tempfile
 from pathlib import Path
 
 _MODEL = None
-_MODEL_NAME = os.environ.get("JARVIS_WHISPER_MODEL", "base")
+_MODEL_NAME = os.environ.get("NOOK_WHISPER_MODEL", "base")
 _LOAD_LOCK = asyncio.Lock()
 
 

@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/github-dark.min.css">
   <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/highlight.min.js"></script>
   <script src="https://unpkg.com/vis-network@9.1.9/standalone/umd/vis-network.min.js"></script>
-  <script src="/jarvis-picker.js"></script>
+  <script src="/nook-picker.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
@@ -692,12 +692,14 @@
     .banco-seg-btn { padding: 5px 16px; border: none; background: transparent; color: var(--text-muted); font-size: 12px; font-weight: 500; border-radius: 6px; cursor: pointer; font-family: inherit; }
     .banco-seg-btn:hover { color: var(--text-dim); }
     .banco-seg-btn.is-on { background: var(--surface); color: var(--text); box-shadow: 0 1px 2px rgba(0,0,0,.15); }
-    .banco-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; }
-    .banco-card { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; text-align: left; transition: border-color .12s, background .12s, transform .12s; font: inherit; }
+    .banco-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 10px; }
+    .banco-card { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 11px; row-gap: 0; padding: 10px 13px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; cursor: pointer; text-align: left; transition: border-color .12s, background .12s, transform .12s; font: inherit; }
     .banco-card:hover { border-color: var(--accent); background: var(--accent-soft); transform: translateY(-1px); }
-    .banco-card-ic { font-size: 20px; line-height: 1; margin-bottom: 6px; }
-    .banco-card-t { font-size: 13px; font-weight: 600; color: var(--text); }
-    .banco-card-s { font-size: 11px; color: var(--text-muted); }
+    .banco-card-ic { grid-column: 1; grid-row: 1 / span 2; display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 9px; background: var(--accent-soft); color: var(--accent); transition: background .12s; }
+    .banco-card-ic svg { width: 17px; height: 17px; }
+    .banco-card:hover .banco-card-ic { background: var(--surface); }
+    .banco-card-t { grid-column: 2; font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.3; }
+    .banco-card-s { grid-column: 2; font-size: 11px; color: var(--text-muted); line-height: 1.3; }
 
     /* "Live" affordance on the central Preview button when dev server is running but user is in editor view */
     @keyframes preview-live-dot {
@@ -1544,7 +1546,7 @@
           <button id="centerViewBancoBtn" onclick="setCodeCenterView('banco')" title="Banco — abre o Supabase Studio" class="center-view-tab" style="display:none">Banco</button>
         </div>
         <button onclick="openProjectSwitcher()" id="codeProjectBtn" title="Trocar projeto" class="pbar-btn">
-          <span>📁</span><span id="codeProjectBtnName">jarvis</span><span style="color:var(--text-muted)">▾</span>
+          <span>📁</span><span id="codeProjectBtnName">Nook</span><span style="color:var(--text-muted)">▾</span>
         </button>
         <button id="codeProjectHubBtn" onclick="openProjectHubNote()" title="Abrir nota do projeto no Hub (Obsidian)" class="pbar-btn" style="display:none">📝 Nota</button>
         <button id="codeProjectBriefBtn" onclick="openProjectBrief()" title="Abrir brief do projeto" class="pbar-btn" style="display:none">📄 Brief</button>
@@ -1738,7 +1740,7 @@
         <div id="builderTree" style="flex:1;overflow-y:auto;padding:4px 6px;font-size:11px"></div>
         <div style="padding:8px 10px;border-top:1px solid var(--border);display:flex;gap:4px;flex-wrap:wrap">
           <button onclick="builderSavePage()" title="Ctrl+S" style="flex:1;background:#22c55e;border:none;color:white;padding:6px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:500">💾 Salvar</button>
-          <button onclick="builderExportJsx()" title="Gera src/jarvis-pages/<name>.tsx (componente JSX estático)" style="flex:1;background:transparent;border:1px solid #0ea5e9;color:#0ea5e9;padding:6px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:500">📤 Export</button>
+          <button onclick="builderExportJsx()" title="Gera src/nook-pages/<name>.tsx (componente JSX estático)" style="flex:1;background:transparent;border:1px solid #0ea5e9;color:#0ea5e9;padding:6px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:500">📤 Export</button>
           <button onclick="builderInstallRuntime()" title="Instala JBuilderPage runtime (live binding com .page.json — Bubble style)" style="flex:1;background:transparent;border:1px solid var(--accent-strong);color:var(--accent-strong);padding:6px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:500">📥 Runtime</button>
           <button onclick="builderSaveAsSnippet()" title="Salvar página atual como snippet no Hub Obsidian" style="flex:1;background:transparent;border:1px solid var(--accent);color:var(--accent);padding:6px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:500">🌱 Hub</button>
           <button onclick="builderAddChild()" title="Adicionar filho ao elemento selecionado" style="background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 8px;border-radius:4px;cursor:pointer;font-size:11px">+ Filho</button>
@@ -1793,7 +1795,7 @@
           <span id="cwBrowserDot" style="width:8px;height:8px;border-radius:50%;background:#64748b" title="ocioso"></span>
         </div>
         <div id="cwBrowserStatus" style="font-size:10px;color:var(--text-muted);padding:2px 12px;line-height:1.4"></div>
-        <button onclick="connectUserChrome()" title="Lança Chrome em perfil dedicado (~/.jarvis-chrome-profile) com debug port. Workers abrem abas nessa janela. Logue uma vez nos serviços que quer automatizar." style="margin:6px 12px 0;background:transparent;border:1px solid #22c55e;color:#22c55e;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:10px;width:calc(100% - 24px);display:flex;align-items:center;gap:6px;justify-content:center">
+        <button onclick="connectUserChrome()" title="Lança Chrome em perfil dedicado (~/.nook-chrome-profile) com debug port. Workers abrem abas nessa janela. Logue uma vez nos serviços que quer automatizar." style="margin:6px 12px 0;background:transparent;border:1px solid #22c55e;color:#22c55e;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:10px;width:calc(100% - 24px);display:flex;align-items:center;gap:6px;justify-content:center">
           <span>🔗 Lançar Chrome CDP</span>
         </button>
       </div>
@@ -2087,7 +2089,7 @@
         </div>
         <div style="background:color-mix(in srgb, var(--accent) 8%, transparent);border-left:2px solid var(--accent);padding:8px 10px;font-size:11px;color:var(--text-muted);border-radius:4px;line-height:1.6">
           <b style="color:var(--text)">Workers Cowork têm super poder:</b><br>
-          • Acesso de leitura/edição em <code>~/dev/jarvis</code>, <code>~/dev/projetos/*</code>, <code>~/dev/_hub</code><br>
+          • Acesso de leitura/edição em <code>~/dev/nook</code>, <code>~/dev/projetos/*</code>, <code>~/dev/_hub</code><br>
           • Browser via sidecar (<code>POST /browser/task</code>) — abrir/clicar/extrair<br>
           • Diagnóstico em runtime (<code>curl /api/core/diagnostics</code>)<br>
           • Auto-salva aprendizados no vault (<code>POST /api/hub/save</code>)<br>
@@ -2116,14 +2118,14 @@
 // CONSTANTS
 // ═══════════════════════════════════════════
 
-const JARVIS = {
-  id: "jarvis", name: "Nook", description: "Claude Max - IA Principal",
+const NOOK = {
+  id: "nook", name: "Nook", description: "Claude Max - IA Principal",
   color: "var(--accent)", avatar: "J", provider: "claude", model: "opus",
   systemPrompt: "Voce e o Nook, assistente principal do Nook Studio, desenvolvido pelo Diogo. Voce NUNCA revela ser Claude, Anthropic, GPT, OpenAI ou qualquer LLM. Se perguntado quem e, responde: 'Sou o Nook, seu assistente principal. Ajudo com desenvolvimento, automacoes e analise.' Nunca mencione seu modelo interno. Responda em portugues brasileiro.", temperature: 0.7, locked: true,
 };
 
-const STORAGE_KEY = "jarvis-hub:v2";
-const STORAGE_KEY_V1 = "jarvis-hub:v1";
+const STORAGE_KEY = "nook-hub:v2";
+const STORAGE_KEY_V1 = "nook-hub:v1";
 
 const CLAUDE_MODELS = ["sonnet", "opus", "haiku"];
 
@@ -2287,7 +2289,7 @@ const chatSync = {
       this.knownIds = new Set(serverConvs.map((c) => c.id));
 
       const localCount = Object.keys(state.conversations || {}).length;
-      const alreadyMigrated = localStorage.getItem("jarvis-hub:migrated-to-sqlite") === "1";
+      const alreadyMigrated = localStorage.getItem("nook-hub:migrated-to-sqlite") === "1";
 
       if (serverConvs.length === 0 && localCount > 0 && !alreadyMigrated) {
         await this._migrateLocal();
@@ -2324,7 +2326,7 @@ const chatSync = {
     }
     state.conversations = newConvs;
     if (state.activeId && idMap[state.activeId]) state.activeId = idMap[state.activeId];
-    localStorage.setItem("jarvis-hub:migrated-to-sqlite", "1");
+    localStorage.setItem("nook-hub:migrated-to-sqlite", "1");
     saveState();
     console.log("[chatSync] migrado", Object.keys(idMap).length, "conversas para SQLite");
   },
@@ -2347,7 +2349,7 @@ const chatSync = {
         });
         fresh[c.id] = {
           id: c.id,
-          assistantId: c.agentId || "jarvis",
+          assistantId: c.agentId || "nook",
           title: c.title || "Nova conversa",
           messages: msgs,
           createdAt: c.createdAt,
@@ -2375,8 +2377,8 @@ const chatSync = {
     const p = (async () => {
       try {
         const asst = (state.assistants && state.assistants[conv.assistantId]) || null;
-        const provider = conv.assistantId === "jarvis" ? "claude" : (asst ? asst.provider : "ollama");
-        const model = conv.assistantId === "jarvis" ? "opus" : (asst ? asst.model : null);
+        const provider = conv.assistantId === "nook" ? "claude" : (asst ? asst.provider : "ollama");
+        const model = conv.assistantId === "nook" ? "opus" : (asst ? asst.model : null);
         const systemPrompt = asst ? (asst.systemPrompt || "") : "";
         const res = await fetch("/api/conversations", {
           method: "POST",
@@ -2450,13 +2452,13 @@ const chatSync = {
 
 function loadToolAllowList() {
   try {
-    const raw = localStorage.getItem("jarvis-hub:tools-allowlist");
+    const raw = localStorage.getItem("nook-hub:tools-allowlist");
     if (raw) { const arr = JSON.parse(raw); toolAutoApprove = new Set([...SAFE_TOOLS, ...arr]); }
   } catch {}
 }
 function saveToolAllowList() {
   const custom = [...toolAutoApprove].filter(t => !SAFE_TOOLS.has(t));
-  localStorage.setItem("jarvis-hub:tools-allowlist", JSON.stringify(custom));
+  localStorage.setItem("nook-hub:tools-allowlist", JSON.stringify(custom));
 }
 loadToolAllowList();
 let pendingTheme = null;
@@ -2529,7 +2531,7 @@ function migrateV1(v1) {
   // Migrate conversations
   if (v1.conversations) {
     for (const [id, conv] of Object.entries(v1.conversations)) {
-      let assistantId = "jarvis";
+      let assistantId = "nook";
       if (conv.model === "contpix") assistantId = SEED_CONTPIX_ID;
       else if (conv.model === "nook") assistantId = SEED_NOOK_ID;
       state.conversations[id] = {
@@ -2548,17 +2550,17 @@ function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 // ── Helpers ──
 
 function getAsst(id) {
-  if (id === "jarvis") {
-    const m = state?.profile?.jarvisModel;
-    if (m && m !== JARVIS.model) return { ...JARVIS, model: m };
-    return JARVIS;
+  if (id === "nook") {
+    const m = state?.profile?.nookModel;
+    if (m && m !== NOOK.model) return { ...NOOK, model: m };
+    return NOOK;
   }
   return state.assistants[id] || null;
 }
 
 function allAssistants() {
   const custom = Object.values(state.assistants).sort((a, b) => a.createdAt - b.createdAt);
-  return [JARVIS, ...custom];
+  return [NOOK, ...custom];
 }
 
 function getConv(id) { return state.conversations[id] || null; }
@@ -2632,7 +2634,7 @@ function selectCodeConv(id) {
 }
 
 function newCodeConv() {
-  const id = createConversation("jarvis", projectKindKey());
+  const id = createConversation("nook", projectKindKey());
   if (!codeChatPanel) initCodeChatPanel();
   selectCodeConv(id);
 }
@@ -2703,7 +2705,7 @@ function deleteConversation(id) {
   if (state.activeId === id) {
     const rem = sortedConvs();
     state.activeId = rem.length > 0 ? rem[0].id : null;
-    if (!state.activeId) createConversation("jarvis");
+    if (!state.activeId) createConversation("nook");
   }
   saveState();
 }
@@ -2714,7 +2716,7 @@ function deriveTitle(text) {
 }
 
 function isOrphan(conv) {
-  if (conv.assistantId === "jarvis") return false;
+  if (conv.assistantId === "nook") return false;
   return !state.assistants[conv.assistantId];
 }
 
@@ -2763,16 +2765,16 @@ function getAsstStatus(a) {
 
 function renderSidebar() {
   const conv = activeConv();
-  const activeAsstId = conv ? conv.assistantId : "jarvis";
+  const activeAsstId = conv ? conv.assistantId : "nook";
 
   // Assistants with status dots
   const list = document.getElementById("asstList");
   list.innerHTML = allAssistants().map(a => {
     const isActive = a.id === activeAsstId;
-    const isJarvis = a.id === "jarvis";
+    const isNook = a.id === "nook";
     const statusClass = getAsstStatus(a);
     let actions = "";
-    if (!isJarvis) {
+    if (!isNook) {
       actions = '<div class="asst-actions">'
         + '<button class="asst-action-btn" onclick="event.stopPropagation();openAsstModal(\'' + a.id + '\')" title="Editar">&#9998;</button>'
         + '<button class="asst-action-btn delete" onclick="event.stopPropagation();deleteAsst(\'' + a.id + '\')" title="Deletar">&times;</button>'
@@ -2990,7 +2992,7 @@ function renderMessages() {
   const conv = activeConv();
 
   if (!conv || conv.messages.length === 0) {
-    const asst = conv ? getAsst(conv.assistantId) : JARVIS;
+    const asst = conv ? getAsst(conv.assistantId) : NOOK;
     const name = asst ? asst.name : "Assistente";
     const desc = asst ? asst.description : "";
     container.innerHTML = '<div class="welcome"><div class="welcome-icon">&#9679;</div>'
@@ -3330,9 +3332,9 @@ function changeModel(model) {
   if (!conv) return;
   const asst = getAsst(conv.assistantId);
   if (!asst) return;
-  if (asst.id === "jarvis") {
+  if (asst.id === "nook") {
     // Nook is hardcoded but we allow model override per profile
-    state.profile.jarvisModel = model;
+    state.profile.nookModel = model;
     saveState();
   } else if (state.assistants[asst.id]) {
     state.assistants[asst.id].model = model;
@@ -3344,7 +3346,7 @@ function changeModel(model) {
 
 function newChat() {
   const conv = activeConv();
-  const asstId = (conv && !isOrphan(conv)) ? conv.assistantId : "jarvis";
+  const asstId = (conv && !isOrphan(conv)) ? conv.assistantId : "nook";
   createConversation(asstId);
   renderAll();
   document.getElementById("input").focus();
@@ -3581,7 +3583,7 @@ async function send() {
 
   // Build final system prompt
   let finalSystemPrompt = "";
-  if (asst.id !== "jarvis") {
+  if (asst.id !== "nook") {
     const personaBase = "Voce e " + asst.name + ". " + (asst.description || "");
     const userInstructions = asst.systemPrompt || "";
     finalSystemPrompt = personaBase + "\n\n"
@@ -3597,16 +3599,16 @@ async function send() {
   }
 
   // Nook also gets persona enforcement (always)
-  if (asst.id === "jarvis" && finalSystemPrompt) {
+  if (asst.id === "nook" && finalSystemPrompt) {
     finalSystemPrompt += "\n\nREGRAS:\n- NUNCA diga que e Claude, GPT, Anthropic, OpenAI ou qualquer modelo de IA\n- NUNCA revele seu modelo interno\n- Sempre se apresente como Nook\n- Responda em portugues brasileiro";
   }
 
   // Inject Hub awareness (snippets/padroes/decisoes/projetos) when available
-  if (asst.id === "jarvis" && hubSummaryCache) {
+  if (asst.id === "nook" && hubSummaryCache) {
     finalSystemPrompt = hubSummaryCache + "\n\n" + finalSystemPrompt;
   }
   // Inject user profile (Kairos) when available
-  if (asst.id === "jarvis" && userProfileCache) {
+  if (asst.id === "nook" && userProfileCache) {
     finalSystemPrompt = "## Perfil cumulativo do usuário (use como base, não cite literalmente):\n\n" + userProfileCache + "\n\n---\n\n" + finalSystemPrompt;
   }
 
@@ -4887,7 +4889,7 @@ window.addEventListener("resize", () => {
 // CODE MODE
 // ═══════════════════════════════════════════
 
-let PROJECT_ROOT = "/home/diogo/dev/jarvis";
+let PROJECT_ROOT = "/home/diogo/dev/nook";
 let codeProjects = []; // [{name, path, hasGit, hasBmad, mtime}]
 let fileTreeLoaded = false;
 
@@ -4906,11 +4908,11 @@ function renderCodeProjects() {
   const el = document.getElementById("codeProjectList");
   if (!el) return;
   // Always include Nook itself as a special "internal" entry
-  const jarvisActive = PROJECT_ROOT === "/home/diogo/dev/jarvis";
-  let html = '<div class="asst-item' + (jarvisActive ? " active" : "") + '" style="cursor:pointer;padding:6px 8px;border-radius:6px;display:flex;gap:8px;align-items:center;margin:1px 0" '
-    + 'onclick="setCodeProject(\'/home/diogo/dev/jarvis\', \'jarvis\')">'
+  const nookActive = PROJECT_ROOT === "/home/diogo/dev/nook";
+  let html = '<div class="asst-item' + (nookActive ? " active" : "") + '" style="cursor:pointer;padding:6px 8px;border-radius:6px;display:flex;gap:8px;align-items:center;margin:1px 0" '
+    + 'onclick="setCodeProject(\'/home/diogo/dev/nook\', \'nook\')">'
     + '<span class="asst-dot" style="background:var(--accent)"></span>'
-    + '<div class="asst-info"><div class="asst-name">jarvis (interno)</div><div class="asst-desc" style="font-size:10px">~/dev/jarvis</div></div>'
+    + '<div class="asst-info"><div class="asst-name">Nook (interno)</div><div class="asst-desc" style="font-size:10px">~/dev/nook</div></div>'
     + '</div>';
   if (!codeProjects.length) {
     html += '<div style="color:var(--text-muted);padding:8px;font-size:11px;font-style:italic">Nenhum projeto. Click em + para criar.</div>';
@@ -5006,7 +5008,7 @@ async function checkDsDrift(rootPath) {
 // (b) Back-sync: promove o arquivo aberto no editor PRO design system vinculado
 async function loadProjectMeta(rootPath) {
   try {
-    const r = await fetch("/api/file-content?path=" + encodeURIComponent(rootPath + "/.jarvis-project.json"));
+    const r = await fetch("/api/file-content?path=" + encodeURIComponent(rootPath + "/.nook-project.json"));
     if (!r.ok) { projectMetaCache = null; }
     else {
       const d = await r.json();
@@ -5096,7 +5098,7 @@ function _bancoPost(action, payload) {
 async function initBancoPane() {
   const body = document.getElementById("codeBancoBody");
   if (!body) return;
-  if (PROJECT_ROOT === "/home/diogo/dev/jarvis") {
+  if (PROJECT_ROOT === "/home/diogo/dev/nook") {
     body.innerHTML = '<div style="padding:30px;color:var(--text-muted);font-size:13px">Banco e por-projeto. Abra um projeto em <code>~/dev/projetos</code>.</div>';
     return;
   }
@@ -5139,6 +5141,18 @@ function bancoRender(body, st) {
   else bancoRenderDev(envBody, st);
 }
 
+function _bancoIcon(key) {
+  const P = {
+    table: '<path d="M12 3v18"/><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
+    sql: '<polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/>',
+    auth: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+    storage: '<line x1="22" y1="12" x2="2" y2="12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/><line x1="6" y1="16" x2="6.01" y2="16"/><line x1="10" y1="16" x2="10.01" y2="16"/>',
+    realtime: '<path d="M22 12h-4l-3 9L9 3l-3 9H2"/>',
+    settings: '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>',
+  };
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (P[key] || "") + '</svg>';
+}
+
 function bancoRenderDev(body, st) {
   const up = st && st.up === true;
   const studioUrl = (st && st.studioUrl) || Banco.studioUrl;
@@ -5148,15 +5162,15 @@ function bancoRenderDev(body, st) {
   const dbHostPort = ((((st && st.dbUrl) || "").match(/@([^/]+)/) || [])[1]) || "127.0.0.1:54322";
   const studioHost = studioUrl.replace(/^https?:\/\//, "");
   const CARDS = [
-    { ic: "🗄", t: "Table Editor", s: tables + (tables === 1 ? " tabela" : " tabelas"), path: "/project/default/editor" },
-    { ic: "⌗", t: "SQL Editor", s: "rodar SQL", path: "/project/default/sql/new" },
-    { ic: "🔑", t: "Auth", s: "usuários", path: "/project/default/auth/users" },
-    { ic: "📦", t: "Storage", s: "buckets", path: "/project/default/storage/buckets" },
-    { ic: "⚡", t: "Realtime", s: "ao vivo", path: "/project/default/realtime/inspector" },
+    { key: "table", t: "Table Editor", s: tables + (tables === 1 ? " tabela" : " tabelas"), path: "/project/default/editor" },
+    { key: "sql", t: "SQL Editor", s: "rodar SQL", path: "/project/default/sql/new" },
+    { key: "auth", t: "Auth", s: "usuários", path: "/project/default/auth/users" },
+    { key: "storage", t: "Storage", s: "buckets", path: "/project/default/storage/buckets" },
+    { key: "realtime", t: "Realtime", s: "ao vivo", path: "/project/default/realtime/inspector" },
   ];
   const cardsHtml = CARDS.map(function (c) {
     return '<button class="banco-card" data-path="' + c.path + '">'
-      + '<span class="banco-card-ic">' + c.ic + '</span>'
+      + '<span class="banco-card-ic">' + _bancoIcon(c.key) + '</span>'
       + '<span class="banco-card-t">' + c.t + '</span>'
       + '<span class="banco-card-s">' + c.s + '</span></button>';
   }).join("");
@@ -5169,16 +5183,13 @@ function bancoRenderDev(body, st) {
     +   '<button id="bancoOpen" class="pbar-btn" style="padding:6px 14px;color:var(--accent);border-color:var(--accent-soft);background:var(--accent-soft)">Abrir Studio ↗</button>'
     + '</div>'
     + '<div class="banco-cards">' + cardsHtml + '</div>'
-    + '<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--text-muted)">'
+    + '<div style="margin-top:16px;font-size:12px;color:var(--text-muted)"><b style="color:var(--text-dim)">Estrutura</b> <span id="bancoDevStats" style="margin-left:6px">' + (up ? "carregando…" : "stack parado") + '</span></div>'
+    + '<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--text-muted)">'
     +   '<b style="color:var(--text-dim)">Conexão</b>'
     +   '<span>API <code>' + apiUrl + '</code></span>'
     +   '<span>DB <code>' + dbHostPort + '</code></span>'
     +   '<span>Studio <code>' + studioHost + '</code></span>'
     +   '<span>· ' + migrations + (migrations === 1 ? " migration" : " migrations") + '</span>'
-    + '</div>'
-    + '<div style="margin-top:14px;display:flex;align-items:center;gap:10px">'
-    +   '<button id="bancoCapture" class="pbar-btn" style="padding:6px 12px" title="Crie/edite tabelas visual no Studio (Table Editor), depois capture aqui numa migration">⤓ Capturar do Studio</button>'
-    +   '<span style="font-size:11px;color:var(--text-muted)">crie tabelas visual no Studio → capture aqui (vira migration reproduzível em prod)</span>'
     + '</div>'
     + (up ? "" : '<div style="margin-top:14px;font-size:12px;color:#f59e0b">Stack parado — <b>Abrir Studio</b> sobe ele e abre a tela.</div>')
     + '</div>';
@@ -5197,98 +5208,253 @@ function bancoRenderDev(body, st) {
     this.disabled = false; this.textContent = t;
   };
   body.querySelector("#bancoReload").onclick = function () { initBancoPane(); };
-  body.querySelector("#bancoCapture").onclick = function () {
-    jModal({
-      title: "Capturar schema do Studio",
-      width: 460,
-      body: '<div style="font-size:12px;color:var(--text-dim);line-height:1.5;margin-bottom:10px">Fotografa as mudanças que você fez VISUAL no Studio (tabelas, colunas) numa <b>migration</b> em <code>supabase/migrations/</code> — assim viram reproduzíveis em prod, sem escrever SQL. Dê um nome pra mudança:</div>'
-        + '<input id="bancoMigName" placeholder="ex: tabela_pedidos" style="width:100%;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none">',
-      actions: [
-        { label: "Cancelar", kind: "ghost", onClick: function (mm) { mm.close(); } },
-        { label: "Capturar", kind: "primary", onClick: async function (mm) {
-            const name = (document.getElementById("bancoMigName").value || "").trim();
-            if (!name) return;
-            mm.close();
-            showToast("Capturando schema do Studio…", "info");
-            const r = await _bancoPost("diff", { name: name }).catch(function (e) { return { error: e.message }; });
-            if (!r || r.error || r.ok === false) showToast("Falhou: " + ((r && r.error) || "erro"), "error");
-            else if (r.nothing) showToast("Nenhuma mudança nova no Studio pra capturar.", "warn");
-            else { showToast("Schema capturado em supabase/migrations/. Rode o migrate pra registrar.", "success"); initBancoPane(); }
-          } },
-      ],
-    });
-    setTimeout(function () { const i = document.getElementById("bancoMigName"); if (i) i.focus(); }, 0);
-  };
+  if (up) {
+    const statsEl = body.querySelector("#bancoDevStats");
+    _bancoPost("inspect").then(function (r) {
+      if (!statsEl) return;
+      const d = r && r.dev && r.dev.totals;
+      statsEl.innerHTML = d
+        ? '<b style="color:var(--text)">' + d.tables + '</b> tabela(s) · <b style="color:var(--text)">' + d.columns + '</b> coluna(s) · <b style="color:var(--text)">' + d.rows + '</b> linha(s)'
+        : "não foi possível ler";
+    }).catch(function () { if (statsEl) statsEl.textContent = "não foi possível ler"; });
+  }
 }
 
 function bancoRenderProd(body, st) {
   const prod = (st && st.prod) || { linked: false };
   if (!prod.linked) {
+    const staleNote = (prod.ref && !prod.hasToken)
+      ? '<div style="font-size:12px;color:#f59e0b;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:10px 12px;margin-bottom:12px">Já existe um destino de prod linkado (<code>' + prod.ref + '</code>), mas falta a credencial por-projeto (linkado pelo método antigo). <b>Reconecte com teu token</b> pra poder promover. <button id="bancoForget" class="pbar-btn" style="padding:3px 9px;font-size:11px;margin-left:6px">esquecer esse destino</button></div>'
+      : '';
     body.innerHTML = '<div style="padding:18px 22px;max-width:680px">'
-      + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">'
+      + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px">'
       +   '<span style="font-size:11px;padding:2px 9px;border-radius:10px;background:var(--surface2);color:var(--text-muted)">○ Não conectado</span>'
       +   '<span style="font-size:12px;color:var(--text-muted)">Produção = projeto Supabase na nuvem (separado do dev local)</span>'
       + '</div>'
-      + '<div style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:16px">O mesmo schema (suas migrations) sobe pro Cloud com <code>db push</code> — local e prod ficam idênticos, só muda a URL/keys. Os <b>dados são separados</b>: o que está no dev local NÃO vai pro prod.</div>'
-      + '<div style="font-size:12px;color:var(--text-dim);line-height:1.9;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-bottom:14px">'
-      +   '<b style="color:var(--text)">Conectar produção (1 vez):</b><br>'
-      +   '1. Crie um projeto em <a href="https://supabase.com/dashboard" target="_blank" style="color:var(--accent)">supabase.com</a> e copie o <b>Project ref</b> (Settings → General).<br>'
-      +   '2. No terminal: <code>supabase login</code> (token de supabase.com → Account → Access Tokens).<br>'
-      +   '3. Cole o ref abaixo e clique Conectar.'
+      + staleNote
+      + '<div style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:14px">As mesmas migrations sobem pro Cloud com <code>db push</code> — schema idêntico, <b>dados separados</b>. Conecte com um <b>access token</b> seu — a credencial fica <b>no projeto</b>, não na máquina:</div>'
+      + '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">'
+      +   '<input id="bancoProdToken" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" name="nook-supabase-token-' + Date.now() + '" placeholder="cole seu Supabase access token (visível pra você conferir)" style="flex:1;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:12px;font-family:ui-monospace,monospace;box-sizing:border-box;outline:none">'
+      +   '<button id="bancoProdList" class="pbar-btn" style="padding:8px 16px;white-space:nowrap">Listar meus projetos</button>'
       + '</div>'
-      + '<div style="display:flex;gap:8px;align-items:center">'
-      +   '<input id="bancoProdRef" placeholder="project-ref (ex: abcdefghij...)" style="flex:1;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;box-sizing:border-box;outline:none">'
-      +   '<button id="bancoProdLink" class="pbar-btn" style="padding:8px 16px;color:var(--accent);border-color:var(--accent-soft);background:var(--accent-soft);white-space:nowrap">Conectar produção</button>'
-      + '</div>'
-      + '<div style="font-size:11px;color:var(--text-muted);margin-top:8px">Precisa do <code>supabase login</code> feito antes (token seu).</div>'
+      + '<div style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Gere em <a href="https://supabase.com/dashboard/account/tokens" target="_blank" style="color:var(--accent)">supabase.com → Account → Access Tokens</a>.</div>'
+      + '<div id="bancoProdProjects"></div>'
       + '</div>';
-    body.querySelector("#bancoProdLink").onclick = async function () {
-      const ref = (document.getElementById("bancoProdRef").value || "").trim();
-      if (!ref) { showToast("Cole o project-ref do projeto Cloud.", "warn"); return; }
-      this.disabled = true; this.textContent = "Conectando…";
-      const r = await _bancoPost("link", { ref: ref }).catch(function (e) { return { error: e.message }; });
-      if (!r || r.error || r.ok === false) { showToast("Falhou: " + ((r && r.error) || "erro — fez supabase login?"), "error"); this.disabled = false; this.textContent = "Conectar produção"; return; }
-      showToast("Produção conectada! Use Promover pra subir o schema.", "success");
+    body.querySelector("#bancoProdList").onclick = async function () {
+      const token = (document.getElementById("bancoProdToken").value || "").trim();
+      if (!token) { showToast("Cole o access token do Supabase.", "warn"); return; }
+      this.disabled = true; this.textContent = "Listando…";
+      const r = await _bancoPost("cloud/projects", { token: token }).catch(function (e) { return { error: e.message }; });
+      this.disabled = false; this.textContent = "Listar meus projetos";
+      const host = document.getElementById("bancoProdProjects");
+      if (!r || r.error || r.ok === false) { showToast("Falhou: " + ((r && r.error) || "erro"), "error"); return; }
+      if (!r.projects || !r.projects.length) { host.innerHTML = '<div style="font-size:12px;color:var(--text-muted)">Nenhum projeto na conta — crie um em supabase.com.</div>'; return; }
+      const opts = r.projects.map(function (p) { return '<option value="' + p.ref + '">' + escapeHtml((p.name || p.ref) + '  ·  ' + (p.org || '?') + '  ·  ' + p.ref) + '</option>'; }).join("");
+      const orgLine = (r.orgs && r.orgs.length)
+        ? '<div style="font-size:11px;color:var(--text-muted);margin-bottom:8px">Esse token é da conta com org(s): <b style="color:var(--text-dim)">' + escapeHtml(r.orgs.join(", ")) + '</b> · ' + r.projects.length + ' projeto(s). <span style="color:#f59e0b">Não é a conta certa? Gere o token logado NA conta dona do projeto.</span></div>'
+        : '';
+      host.innerHTML = orgLine
+        + '<div style="font-size:12px;color:var(--text-dim);margin-bottom:6px">Escolha o projeto de produção (nome · org · ref):</div>'
+        + '<div style="display:flex;gap:8px;align-items:center">'
+        +   '<select id="bancoProdSelect" style="flex:1;padding:8px 10px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text);font-size:13px;outline:none">' + opts + '</select>'
+        +   '<button id="bancoProdLink" class="pbar-btn" style="padding:8px 16px;color:var(--accent);border-color:var(--accent-soft);background:var(--accent-soft);white-space:nowrap">Conectar</button>'
+        + '</div>';
+      host.querySelector("#bancoProdLink").onclick = async function () {
+        const ref = document.getElementById("bancoProdSelect").value;
+        if (!ref) return;
+        const picked = (r.projects || []).filter(function (p) { return p.ref === ref; })[0] || {};
+        this.disabled = true; this.textContent = "Conectando…";
+        const lr = await _bancoPost("link", { ref: ref, token: token, name: picked.name, org: picked.org }).catch(function (e) { return { error: e.message }; });
+        if (!lr || lr.error || lr.ok === false) { showToast("Falhou: " + ((lr && lr.error) || "erro"), "error"); this.disabled = false; this.textContent = "Conectar"; return; }
+        showToast("Produção conectada! Use Promover pra subir o schema.", "success");
+        initBancoPane();
+      };
+    };
+    const forgetBtn = body.querySelector("#bancoForget");
+    if (forgetBtn) forgetBtn.onclick = async function () {
+      this.disabled = true; this.textContent = "esquecendo…";
+      await _bancoPost("unlink").catch(function () {});
+      showToast("Destino de prod esquecido.", "success");
       initBancoPane();
     };
     return;
   }
   const base = prod.dashboardUrl;
   const CARDS = [
-    { ic: "🗄", t: "Table Editor", s: "ver dados", path: "/editor" },
-    { ic: "⌗", t: "SQL Editor", s: "rodar SQL", path: "/sql/new" },
-    { ic: "🔑", t: "Auth", s: "usuários", path: "/auth/users" },
-    { ic: "📦", t: "Storage", s: "buckets", path: "/storage/buckets" },
-    { ic: "⚙", t: "Settings", s: "keys / URL", path: "/settings/general" },
+    { key: "table", t: "Table Editor", s: "ver dados", path: "/editor" },
+    { key: "sql", t: "SQL Editor", s: "rodar SQL", path: "/sql/new" },
+    { key: "auth", t: "Auth", s: "usuários", path: "/auth/users" },
+    { key: "storage", t: "Storage", s: "buckets", path: "/storage/buckets" },
+    { key: "settings", t: "Settings", s: "keys / URL", path: "/settings/general" },
   ];
   const cardsHtml = CARDS.map(function (c) {
-    return '<button class="banco-card" data-href="' + base + c.path + '"><span class="banco-card-ic">' + c.ic + '</span><span class="banco-card-t">' + c.t + '</span><span class="banco-card-s">' + c.s + '</span></button>';
+    return '<button class="banco-card" data-href="' + base + c.path + '"><span class="banco-card-ic">' + _bancoIcon(c.key) + '</span><span class="banco-card-t">' + c.t + '</span><span class="banco-card-s">' + c.s + '</span></button>';
   }).join("");
+  const lp = prod.lastPublish;
+  function _metaRow(label, val) { return '<div><span style="color:var(--text-muted);display:inline-block;width:96px">' + label + '</span> ' + val + '</div>'; }
+  let lpAt = "";
+  try { lpAt = lp ? new Date(lp.at).toLocaleString("pt-BR") : ""; } catch { lpAt = ""; }
+  const lpHtml = lp
+    ? _metaRow("Publica em", '<code style="color:var(--accent)">schema ' + escapeHtml(lp.schema) + '</code>')
+      + _metaRow("Última pub.", '<span style="color:var(--text-dim)">' + escapeHtml(lpAt) + ' · ' + (lp.total != null ? lp.total : (lp.applied || 0)) + ' migration(s)</span>')
+    : _metaRow("Publicação", '<span style="color:var(--text-muted)">ainda não publicou</span>');
   body.innerHTML = '<div style="padding:18px 22px">'
-    + '<div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">'
-    +   '<span style="font-size:11px;padding:2px 9px;border-radius:10px;background:rgba(34,197,94,.12);color:#22c55e">● Conectado</span>'
-    +   '<span style="font-size:12px;color:var(--text-muted)">Cloud · <code>' + prod.ref + '</code></span>'
+    + '<div style="display:flex;align-items:center;gap:9px;margin-bottom:14px">'
+    +   '<span style="font-size:12px;font-weight:600;padding:3px 11px;border-radius:10px;background:rgba(34,197,94,.12);color:#22c55e">● Conectado</span>'
+    +   '<span style="font-size:12px;color:var(--text-dim)">a <b style="color:var(--text)">' + escapeHtml(prod.name || prod.ref) + '</b></span>'
     +   '<span style="flex:1"></span>'
     +   '<button id="bancoProdOpen" class="pbar-btn" style="padding:6px 14px;color:var(--accent);border-color:var(--accent-soft);background:var(--accent-soft)">Abrir Studio (Cloud) ↗</button>'
+    +   '<button id="bancoUnlink" class="pbar-btn" style="padding:6px 11px;font-size:11px;color:var(--text-muted)" title="Desconectar produção — remove só o vínculo local, não apaga nada no Cloud">Desconectar</button>'
+    + '</div>'
+    + '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:16px;font-size:12px;line-height:2">'
+    +   _metaRow("Org / conta", '<span style="color:var(--text-dim)">' + escapeHtml(prod.org || "—") + '</span>')
+    +   _metaRow("Project ref", '<code>' + escapeHtml(prod.ref) + '</code>')
+    +   '<div style="border-top:1px solid var(--border);margin:7px 0 5px"></div>'
+    +   lpHtml
+    +   _metaRow("Estrutura", '<span id="bancoProdStats" style="color:var(--text-muted)">carregando…</span>')
     + '</div>'
     + '<div class="banco-cards">' + cardsHtml + '</div>'
     + '<div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;gap:10px">'
-    +   '<button id="bancoPromote" class="pbar-btn" style="padding:7px 14px;color:var(--accent);border-color:var(--accent-soft)">⤴ Promover dev → prod (db push)</button>'
-    +   '<span style="font-size:11px;color:var(--text-muted)">aplica suas migrations no banco de produção</span>'
+    +   '<button id="bancoPromote" class="pbar-btn" style="padding:7px 14px;color:var(--accent);border-color:var(--accent-soft);background:var(--accent-soft)">⤴ Publicar dev → prod</button>'
+    +   '<button id="bancoInspect" class="pbar-btn" style="padding:7px 12px">🔍 Comparar dev × prod</button>'
+    +   '<span style="flex:1"></span>'
+    +   '<span id="bancoDriftBadge"></span>'
     + '</div>'
     + '</div>';
   Array.prototype.forEach.call(body.querySelectorAll(".banco-card"), function (el) {
     el.onclick = function () { window.open(el.dataset.href, "_blank", "noopener"); };
   });
   body.querySelector("#bancoProdOpen").onclick = function () { window.open(base, "_blank", "noopener"); };
-  body.querySelector("#bancoPromote").onclick = async function () {
-    if (!window.confirm("Promover: aplicar as migrations locais no banco de PRODUÇÃO (Cloud)?")) return;
-    this.disabled = true; this.textContent = "Promovendo…";
-    const r = await _bancoPost("promote").catch(function (e) { return { error: e.message }; });
-    if (!r || r.error || r.ok === false) showToast("Falhou: " + ((r && r.error) || "erro"), "error");
-    else showToast("Schema promovido pro prod (db push).", "success");
-    this.disabled = false; this.textContent = "⤴ Promover dev → prod (db push)";
+  // Carrega a estrutura (dev × prod) de forma assíncrona — não trava o render do pane.
+  var _bancoInspectData = null;
+  (function loadInspect() {
+    const statsEl = body.querySelector("#bancoProdStats");
+    const badgeEl = body.querySelector("#bancoDriftBadge");
+    _bancoPost("inspect").then(function (r) {
+      if (!r || r.ok === false) { if (statsEl) statsEl.textContent = "não foi possível ler"; return; }
+      _bancoInspectData = r;
+      const p = r.prod, t = p && p.totals;
+      if (statsEl) statsEl.innerHTML = p
+        ? '<b style="color:var(--text)">' + t.tables + '</b> tabela(s) · <b style="color:var(--text)">' + t.columns + '</b> coluna(s) · <b style="color:var(--text)">' + t.rows + '</b> linha(s) <span style="color:var(--text-muted)">em <code>' + escapeHtml(p.schema) + '</code></span>'
+        : '<span style="color:var(--text-muted)">schema ainda não existe em prod</span>';
+      if (badgeEl && r.drift) {
+        badgeEl.innerHTML = r.drift.inSync
+          ? '<span style="font-size:11px;color:#22c55e">✓ dev e prod batem</span>'
+          : '<span style="font-size:11px;color:#f59e0b;cursor:pointer" title="clique em Comparar pra ver">⚠ ' + (r.drift.missingTables.length + r.drift.missingColumns.length) + ' diferença(s) com o dev</span>';
+      }
+    }).catch(function () { if (statsEl) statsEl.textContent = "não foi possível ler"; });
+  })();
+  body.querySelector("#bancoInspect").onclick = async function () {
+    if (!_bancoInspectData) {
+      this.disabled = true; const t = this.textContent; this.textContent = "Lendo…";
+      _bancoInspectData = await _bancoPost("inspect").catch(function () { return null; });
+      this.disabled = false; this.textContent = t;
+    }
+    if (!_bancoInspectData || _bancoInspectData.ok === false) { showToast("Não foi possível ler a estrutura.", "error"); return; }
+    bancoInspectModal(_bancoInspectData);
   };
+  body.querySelector("#bancoPromote").onclick = function () {
+    const btn = this;
+    const info = (st && st.migrationsInfo) || {};
+    const appSchema = (PROJECT_ROOT.split("/").filter(Boolean).pop() || "app").toLowerCase().replace(/[^a-z0-9_]/g, "_").replace(/^[^a-z]+/, "").slice(0, 48) || "app";
+    jModal({
+      title: "Publicar dev → prod",
+      width: 480,
+      body: '<div style="font-size:13px;color:var(--text-dim);line-height:1.6;margin-bottom:12px">Aplica suas <b>' + (info.count || 0) + '</b> migration(s) na produção (<code>' + escapeHtml(prod.name || prod.ref) + '</code>). Como publicar?</div>'
+        + '<label style="display:block;border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;cursor:pointer"><div style="display:flex;align-items:center;gap:7px"><input type="radio" name="bancoPubMode" value="schema" checked> <b style="font-size:13px">Schema isolado</b> <input id="bancoSchemaInput" value="' + escapeHtml(appSchema) + '" spellcheck="false" autocomplete="off" style="flex:1;min-width:0;padding:4px 8px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;color:var(--accent);font-size:12px;font-family:ui-monospace,monospace;outline:none"></div><div style="font-size:11px;color:var(--text-muted);margin-top:5px;line-height:1.5">Pra prod <b>compartilhada</b> entre apps. Cria o schema e aplica as tabelas só nele, sem tocar nos outros apps. Histórico próprio. <i>Sugeri o nome do projeto — pode trocar.</i></div></label>'
+        + '<label style="display:block;border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer"><div style="display:flex;align-items:center;gap:7px"><input type="radio" name="bancoPubMode" value="public"> <b style="font-size:13px">public</b> <span style="font-size:11px;color:var(--text-muted)">(db push)</span></div><div style="font-size:11px;color:var(--text-muted);margin-top:5px;line-height:1.5">Só se a prod for <b>dedicada</b> a este app. Sobe via <code>db push</code> no schema public.</div></label>'
+        + '<div id="bancoPubHint" style="font-size:11px;color:#f59e0b;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:9px 11px;margin-top:11px;line-height:1.5">No backend de prod, conecte com <code>search_path=' + escapeHtml(appSchema) + '</code> no <code>DATABASE_URL</code> pra app achar as tabelas.</div>',
+      actions: [
+        { label: "Cancelar", kind: "ghost", onClick: function (mm) { mm.close(); } },
+        { label: "Publicar", kind: "accent", onClick: async function (mm) {
+            const mode = document.querySelector('input[name="bancoPubMode"]:checked').value;
+            mm.close();
+            btn.disabled = true; btn.textContent = "Publicando…";
+            let r, okPub = false;
+            if (mode === "public") {
+              r = await _bancoPost("promote").catch(function (e) { return { error: e.message }; });
+              if (!r || r.error || r.ok === false) showToast("Falhou: " + ((r && r.error) || "erro"), "error");
+              else { okPub = true; showToast("Publicado em public (db push).", "success"); }
+            } else {
+              const schemaIn = (document.getElementById("bancoSchemaInput").value || "").trim() || appSchema;
+              r = await _bancoPost("publish", { schema: schemaIn }).catch(function (e) { return { error: e.message }; });
+              if (!r || r.error || r.ok === false) showToast("Falhou: " + ((r && r.error) || "erro"), "error");
+              else if (r.message) { okPub = true; showToast(r.message, "info"); }
+              else { okPub = true; showToast("Publicado no schema " + r.schema + " (" + ((r.applied && r.applied.length) || 0) + " migration(s)).", "success"); }
+            }
+            btn.disabled = false; btn.textContent = "⤴ Publicar dev → prod";
+            if (okPub) initBancoPane();
+          } },
+      ],
+    });
+    setTimeout(function () {
+      const hint = document.getElementById("bancoPubHint");
+      const input = document.getElementById("bancoSchemaInput");
+      function clean(s) { return (s || "").toLowerCase().replace(/[^a-z0-9_]/g, "_").replace(/^[^a-z]+/, "").slice(0, 48); }
+      function sync() {
+        const isSchema = document.querySelector('input[name="bancoPubMode"]:checked').value === "schema";
+        input.disabled = !isSchema;
+        input.style.opacity = isSchema ? "1" : ".45";
+        hint.style.display = isSchema ? "block" : "none";
+        if (isSchema) hint.innerHTML = 'No backend de prod, conecte com <code>search_path=' + escapeHtml(clean(input.value) || appSchema) + '</code> no <code>DATABASE_URL</code> pra app achar as tabelas.';
+      }
+      Array.prototype.forEach.call(document.getElementsByName("bancoPubMode"), function (rb) { rb.onchange = sync; });
+      input.oninput = sync;
+      sync();
+    }, 0);
+  };
+  body.querySelector("#bancoUnlink").onclick = async function () {
+    if (!window.confirm("Desconectar produção? Remove a credencial e o link do projeto Cloud deste projeto. NÃO apaga nada no Cloud.")) return;
+    this.disabled = true; this.textContent = "Desconectando…";
+    const r = await _bancoPost("unlink").catch(function (e) { return { error: e.message }; });
+    if (!r || r.error || r.ok === false) { showToast("Falhou: " + ((r && r.error) || "erro"), "error"); this.disabled = false; this.textContent = "Desconectar"; return; }
+    showToast("Produção desconectada.", "success");
+    initBancoPane();
+  };
+}
+
+// Modal de comparação de estrutura dev × prod (tabelas/colunas/linhas + o que falta em prod).
+function bancoInspectModal(data) {
+  const dev = data.dev, prod = data.prod, drift = data.drift;
+  function totalsCol(label, obj, color) {
+    if (!obj) return '<div style="flex:1;text-align:center;color:var(--text-muted);font-size:12px">' + label + '<br><span style="font-size:11px">(sem dados)</span></div>';
+    const t = obj.totals;
+    return '<div style="flex:1;text-align:center">'
+      + '<div style="font-size:11px;color:var(--text-muted)">' + label + ' <code>' + escapeHtml(obj.schema) + '</code></div>'
+      + '<div style="font-size:13px;color:' + color + ';margin-top:3px"><b>' + t.tables + '</b> tab · <b>' + t.columns + '</b> col · <b>' + t.rows + '</b> lin</div></div>';
+  }
+  let banner;
+  if (!prod) banner = '<div style="font-size:12px;color:#f59e0b;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:9px 11px;margin:12px 0">O schema <code>' + escapeHtml(data.prodSchema || "") + '</code> ainda não existe em prod — publique primeiro.</div>';
+  else if (drift && drift.inSync) banner = '<div style="font-size:12px;color:#22c55e;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:9px 11px;margin:12px 0">✓ Dev e prod estão iguais (mesmas tabelas e colunas).</div>';
+  else if (drift) {
+    let items = "";
+    drift.missingTables.forEach(function (t) { items += '<li><b>tabela</b> <code>' + escapeHtml(t) + '</code> não existe em prod</li>'; });
+    drift.missingColumns.forEach(function (m) { items += '<li>coluna(s) <code>' + escapeHtml(m.columns.join(", ")) + '</code> de <code>' + escapeHtml(m.table) + '</code> faltam em prod</li>'; });
+    banner = '<div style="font-size:12px;color:#f59e0b;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.25);border-radius:8px;padding:9px 11px;margin:12px 0">⚠ <b>Diferenças (dev tem, prod não):</b><ul style="margin:6px 0 0;padding-left:18px;line-height:1.7">' + items + '</ul><div style="margin-top:6px;color:var(--text-muted)">Capture numa migration e publique de novo pra alinhar.</div></div>';
+  } else banner = "";
+  const prodCols = {}, prodRows = {};
+  if (prod) prod.tables.forEach(function (t) { prodCols[t.name] = {}; t.columns.forEach(function (c) { prodCols[t.name][c.name] = c.type; }); prodRows[t.name] = t.rows; });
+  let tablesHtml = "";
+  (dev ? dev.tables : []).forEach(function (t) {
+    const inProd = prod && prodCols[t.name];
+    const cols = t.columns.map(function (c) {
+      const has = inProd && (c.name in prodCols[t.name]);
+      return '<div style="display:flex;align-items:center;gap:6px;padding:2px 0"><span style="width:13px;color:' + (has ? "#22c55e" : "#ef4444") + '">' + (has ? "✓" : "✗") + '</span><code style="' + (has ? "" : "color:#ef4444") + '">' + escapeHtml(c.name) + '</code><span style="color:var(--text-muted);font-size:11px">' + escapeHtml(c.type) + '</span>' + (has ? "" : '<span style="color:#ef4444;font-size:11px">· falta em prod</span>') + '</div>';
+    }).join("");
+    tablesHtml += '<div style="border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px">'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><b style="font-size:13px">' + escapeHtml(t.name) + '</b>'
+      + (inProd ? "" : '<span style="font-size:11px;color:#ef4444">não existe em prod</span>')
+      + '<span style="flex:1"></span><span style="font-size:11px;color:var(--text-muted)">linhas — dev <b style="color:var(--text-dim)">' + (t.rows || 0) + '</b> · prod <b style="color:var(--text-dim)">' + (inProd ? (prodRows[t.name] || 0) : "—") + '</b></span></div>'
+      + cols + '</div>';
+  });
+  jModal({
+    title: "Estrutura: dev × prod",
+    width: 560,
+    body: '<div style="display:flex;gap:10px;background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px">'
+      + totalsCol("Dev", dev, "var(--text)") + '<div style="width:1px;background:var(--border)"></div>' + totalsCol("Prod", prod, "var(--accent)")
+      + '</div>' + banner + tablesHtml,
+    actions: [{ label: "Fechar", kind: "accent", onClick: function (mm) { mm.close(); } }],
+  });
 }
 
 async function refreshDevServerState() {
@@ -5310,9 +5476,9 @@ async function refreshDevServerState() {
     const alreadyPreview = (typeof _codeCenterCurrentView !== "undefined") && _codeCenterCurrentView === "preview";
     if (inCode && !alreadyPreview) {
       const port = devServerState.port || "";
-      // Flag: localStorage["jarvis.autoPreview"] !== "false" → auto-switch enabled (default ON).
+      // Flag: localStorage["nook.autoPreview"] !== "false" → auto-switch enabled (default ON).
       let autoPreview = true;
-      try { autoPreview = localStorage.getItem("jarvis.autoPreview") !== "false"; } catch {}
+      try { autoPreview = localStorage.getItem("nook.autoPreview") !== "false"; } catch {}
       if (autoPreview) {
         setTimeout(() => {
           try {
@@ -5524,8 +5690,8 @@ async function refreshCmdPaletteResults() {
       }
     }
   }
-  // BMAD agents (when in code with non-jarvis project)
-  if (typeof state !== "undefined" && state.currentMode === "code" && typeof PROJECT_ROOT === "string" && PROJECT_ROOT !== "/home/diogo/dev/jarvis") {
+  // BMAD agents (when in code with non-nook project)
+  if (typeof state !== "undefined" && state.currentMode === "code" && typeof PROJECT_ROOT === "string" && PROJECT_ROOT !== "/home/diogo/dev/nook") {
     for (const a of (typeof BMAD_RUNNERS !== "undefined" ? BMAD_RUNNERS : [])) {
       if (!q || a.label.toLowerCase().includes(q) || a.id.includes(q)) {
         results.push({
@@ -5917,7 +6083,7 @@ async function toggleBuilder() {
 
 async function builderListPages() {
   Builder.pages = [];
-  const dir = PROJECT_ROOT + "/jarvis-pages";
+  const dir = PROJECT_ROOT + "/nook-pages";
   try {
     const r = await fetch("/api/files?path=" + encodeURIComponent(dir));
     const d = await r.json();
@@ -5940,7 +6106,7 @@ async function builderListPages() {
 
 async function builderCreatePage(name, silent, templateKey) {
   const safeName = (name || "page").trim().toLowerCase().replace(/[^a-z0-9-]+/g, "-");
-  const filePath = PROJECT_ROOT + "/jarvis-pages/" + safeName + ".page.json";
+  const filePath = PROJECT_ROOT + "/nook-pages/" + safeName + ".page.json";
   const tpl = (templateKey && BUILDER_PAGE_TEMPLATES[templateKey]) || BUILDER_PAGE_TEMPLATES.welcome;
   const page = tpl.build(safeName);
   await fetch("/api/fs", {
@@ -6000,7 +6166,7 @@ function builderOpenTemplatePicker() {
       await builderListPages();
       // Switch to the new page
       const sel = document.getElementById("builderPageSelect");
-      const newPath = PROJECT_ROOT + "/jarvis-pages/" + created + ".page.json";
+      const newPath = PROJECT_ROOT + "/nook-pages/" + created + ".page.json";
       if (sel) { sel.value = newPath; await builderLoadPage(newPath); }
     });
   });
@@ -6193,11 +6359,11 @@ async function builderDetectFramework() {
 }
 
 async function builderWritePagesIndex(framework, pageName, componentName) {
-  // For Vite: maintain src/jarvis-pages/index.ts that re-exports all pages
+  // For Vite: maintain src/nook-pages/index.ts that re-exports all pages
   if (framework !== "vite") return;
   try {
     // Read current index.ts (if any)
-    const indexPath = PROJECT_ROOT + "/src/jarvis-pages/index.ts";
+    const indexPath = PROJECT_ROOT + "/src/nook-pages/index.ts";
     const r = await fetch("/api/file-content?path=" + encodeURIComponent(indexPath));
     const d = await r.json();
     let cur = (d && d.content) || "";
@@ -6214,7 +6380,7 @@ async function builderWritePagesIndex(framework, pageName, componentName) {
 // Install Builder runtime (JBuilderPage component) into the user's project.
 // Lets the running app render .page.json directly — change in Builder = change in app, no Export needed.
 async function builderInstallRuntime() {
-  if (!PROJECT_ROOT || PROJECT_ROOT === "/home/diogo/dev/jarvis") {
+  if (!PROJECT_ROOT || PROJECT_ROOT === "/home/diogo/dev/nook") {
     showToast && showToast("Runtime só funciona em projetos de ~/dev/projetos/", "warn");
     return;
   }
@@ -6280,15 +6446,15 @@ export default JBuilderPage;
       method: "POST", headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ action: "write", path: compPath, content: componentSrc }),
     });
-    // 2) Copy all .page.json files into src/jarvis-pages/
-    const pagesDir = PROJECT_ROOT + "/jarvis-pages";
+    // 2) Copy all .page.json files into src/nook-pages/
+    const pagesDir = PROJECT_ROOT + "/nook-pages";
     const r = await fetch("/api/files?path=" + encodeURIComponent(pagesDir));
     const d = await r.json();
     const pages = (d.files || []).filter(f => !f.isDir && f.name.endsWith(".page.json"));
     const indexLines = [];
     for (const p of pages) {
       const content = await fetch("/api/file-content?path=" + encodeURIComponent(p.path)).then(r => r.json());
-      const dest = PROJECT_ROOT + "/src/jarvis-pages/" + p.name;
+      const dest = PROJECT_ROOT + "/src/nook-pages/" + p.name;
       await fetch("/api/fs", {
         method: "POST", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action: "write", path: dest, content: content.content || "{}" }),
@@ -6299,7 +6465,7 @@ export default JBuilderPage;
       indexLines.push(`export const ${id} = ${id}Json as any;`);
     }
     // 3) Index file
-    const indexPath = PROJECT_ROOT + "/src/jarvis-pages/index.ts";
+    const indexPath = PROJECT_ROOT + "/src/nook-pages/index.ts";
     const indexSrc = `// Auto-gerado pelo Nook Builder Runtime install.\n${indexLines.join("\n")}\n`;
     await fetch("/api/fs", {
       method: "POST", headers: { "Content-Type": "application/json" },
@@ -6315,11 +6481,11 @@ export default JBuilderPage;
 function builderShowRuntimeUsage(pageNames) {
   const first = pageNames[0] || "home";
   const id = first.replace(/[^a-z0-9]/gi, "_");
-  const snippet = `import { JBuilderPage } from "@/components/JBuilderPage";\nimport { ${id} } from "@/jarvis-pages";\n\nexport default function App() {\n  return <JBuilderPage page={${id}} />;\n}`;
+  const snippet = `import { JBuilderPage } from "@/components/JBuilderPage";\nimport { ${id} } from "@/nook-pages";\n\nexport default function App() {\n  return <JBuilderPage page={${id}} />;\n}`;
   const html = ''
     + '<div style="display:flex;flex-direction:column;gap:10px">'
     +   '<div style="font-size:12px;color:var(--text)">Runtime instalado em <code>src/components/JBuilderPage.tsx</code>.</div>'
-    +   '<div style="font-size:12px;color:var(--text-muted)">' + pageNames.length + ' página(s) copiadas pra <code>src/jarvis-pages/</code></div>'
+    +   '<div style="font-size:12px;color:var(--text-muted)">' + pageNames.length + ' página(s) copiadas pra <code>src/nook-pages/</code></div>'
     +   '<div style="font-size:11px;color:var(--text-muted)">Use assim no seu app:</div>'
     +   '<pre style="background:#0f172a;color:#cbd5e1;padding:10px;border-radius:6px;font-size:11px;overflow-x:auto;white-space:pre;border:1px solid var(--border);font-family:ui-monospace,Menlo,monospace">' + escapeHtml(snippet) + '</pre>'
     +   '<div style="font-size:11px;color:var(--text-muted)">Toda vez que você editar a página no Builder, basta re-instalar o runtime (ou rodar o npm dev — ele copia automático no próximo install).</div>'
@@ -6366,8 +6532,8 @@ ${jsx}
   const framework = await builderDetectFramework();
   // Output path differs by framework:
   //  - Next.js: src/app/<name>/page.tsx (becomes a route at /<name>)
-  //  - Vite: src/jarvis-pages/<name>.tsx (user imports manually)
-  //  - Other: src/jarvis-pages/<name>.tsx
+  //  - Vite: src/nook-pages/<name>.tsx (user imports manually)
+  //  - Other: src/nook-pages/<name>.tsx
   let outPath, hint;
   if (framework === "nextjs") {
     // For "home" or "index", treat as root route
@@ -6375,8 +6541,8 @@ ${jsx}
     outPath = PROJECT_ROOT + "/src/app/" + (isRoot ? "" : pageName + "/") + "page.tsx";
     hint = isRoot ? "rota / (raiz)" : "rota /" + pageName;
   } else {
-    outPath = PROJECT_ROOT + "/src/jarvis-pages/" + pageName + ".tsx";
-    hint = 'use: import { ' + componentName + ' } from "@/jarvis-pages"';
+    outPath = PROJECT_ROOT + "/src/nook-pages/" + pageName + ".tsx";
+    hint = 'use: import { ' + componentName + ' } from "@/nook-pages"';
   }
   try {
     const r = await fetch("/api/fs", {
@@ -7545,7 +7711,7 @@ function renderBmadStreamEditor(tab) {
 }
 
 async function runBmadAgent(agent, fileName) {
-  if (PROJECT_ROOT === "/home/diogo/dev/jarvis") {
+  if (PROJECT_ROOT === "/home/diogo/dev/nook") {
     showToast && showToast("BMAD on-demand so em projetos de ~/dev/projetos/", "warn");
     return;
   }
@@ -7676,7 +7842,7 @@ function stopDevServerPoll() {
 
 function openEditMetaModal() {
   const projName = (PROJECT_ROOT || "").split("/").filter(Boolean).pop() || "";
-  if (!projName || PROJECT_ROOT === "/home/diogo/dev/jarvis") {
+  if (!projName || PROJECT_ROOT === "/home/diogo/dev/nook") {
     showToast && showToast("Metadata so funciona em projetos de ~/dev/projetos/", "warn");
     return;
   }
@@ -7798,13 +7964,13 @@ async function saveProjectMeta(mm, projName) {
   }
   status.textContent = "Salvando...";
   try {
-    // 1) Write .jarvis-project.json
+    // 1) Write .nook-project.json
     const r = await fetch("/api/fs", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         action: "write",
-        path: PROJECT_ROOT + "/.jarvis-project.json",
+        path: PROJECT_ROOT + "/.nook-project.json",
         content: JSON.stringify(meta, null, 2),
       }),
     });
@@ -8062,9 +8228,9 @@ async function deleteCodeProject(name, ev) {
     Object.values(state.conversations)
       .filter(c => c.kind === linkedKind)
       .forEach(c => deleteConversation(c.id));
-    // If deleted project was the active one, switch to jarvis
+    // If deleted project was the active one, switch to nook
     const wasActive = PROJECT_ROOT.endsWith("/" + name);
-    if (wasActive) setCodeProject("/home/diogo/dev/jarvis", "jarvis");
+    if (wasActive) setCodeProject("/home/diogo/dev/nook", "nook");
     await loadCodeProjects();
     renderAll();
   } catch (e) {
@@ -8339,7 +8505,7 @@ function makeTreeRow(f, depth) {
     // Drag from tree → drop on chat input attaches the file
     row.draggable = true;
     row.addEventListener("dragstart", (e) => {
-      e.dataTransfer.setData("application/x-jarvis-path", f.path);
+      e.dataTransfer.setData("application/x-nook-path", f.path);
       e.dataTransfer.setData("text/plain", f.path);
       e.dataTransfer.effectAllowed = "copy";
     });
@@ -8800,7 +8966,7 @@ function toggleEditorPreview(on) {
 }
 
 // ── Preview pane (right panel tab) ──
-const PREVIEW_CONFIG_KEY = "jarvis-hub:previewConfig";
+const PREVIEW_CONFIG_KEY = "nook-hub:previewConfig";
 function getPreviewConfig() { try { return JSON.parse(localStorage.getItem(PREVIEW_CONFIG_KEY) || "{}"); } catch { return {}; } }
 function savePreviewConfig(cfg) { localStorage.setItem(PREVIEW_CONFIG_KEY, JSON.stringify(cfg)); }
 function projectKey() { return PROJECT_ROOT.split("/").filter(Boolean).pop() || "default"; }
@@ -8947,7 +9113,7 @@ function setCodeCenterView(view) {
 
 // ── Canvas: grid of mounted components/pages ──
 async function initCanvasPane() {
-  if (PROJECT_ROOT === "/home/diogo/dev/jarvis") {
+  if (PROJECT_ROOT === "/home/diogo/dev/nook") {
     const grid = document.getElementById("canvasGrid");
     if (grid) grid.innerHTML = '<div style="grid-column:1/-1;color:var(--text-muted);padding:30px;text-align:center;font-size:13px">Canvas nao disponivel pro Nook Studio. Selecione um projeto em ~/dev/projetos/.</div>';
     return;
@@ -9088,7 +9254,7 @@ function showPreviewStartingMsg(msg) {
 }
 
 async function maybeAutoStartDevServer() {
-  if (PROJECT_ROOT === "/home/diogo/dev/jarvis") return;
+  if (PROJECT_ROOT === "/home/diogo/dev/nook") return;
   if (devServerState && devServerState.running) return;
   let needsDev = false;
   if (projectMetaCache && projectMetaCache.kind === "web") needsDev = true;
@@ -9197,11 +9363,11 @@ function reloadPreview() {
   const st = getPreviewState();
   // Dogfooding: o Hub e servido direto pelo Node em :3000 (nao e app Vite).
   // Renderiza o Hub vivo no preview central pra permitir o picker no proprio repo.
-  if (PROJECT_ROOT === "/home/diogo/dev/jarvis") {
+  if (PROJECT_ROOT === "/home/diogo/dev/nook") {
     iframe.removeAttribute("srcdoc");
     iframe.src = "http://localhost:3000/?_=" + Date.now();
     iframe.dataset.devUrl = "";
-    iframe.dataset.jarvisLive = "1";
+    iframe.dataset.nookLive = "1";
     if (status) status.textContent = "Nook Studio vivo (:3000) — clique no alvo (◎) pra selecionar um elemento e pedir ajuste no chat";
     if (typeof updatePreviewBarUI === "function") updatePreviewBarUI();
     return;
@@ -9214,7 +9380,7 @@ function reloadPreview() {
     iframe.removeAttribute("srcdoc");
     iframe.src = target + (target.includes("?") ? "&" : "?") + "_=" + Date.now();
     iframe.dataset.devUrl = devServerState.url;
-    iframe.dataset.jarvisLive = "";
+    iframe.dataset.nookLive = "";
     if (status) status.textContent = "Dev: " + target + "  (HMR ativo via Vite — edite e veja na hora)";
     if (typeof updatePreviewBarUI === "function") updatePreviewBarUI();
     return;
@@ -9227,7 +9393,7 @@ function reloadPreview() {
   iframe.removeAttribute("srcdoc");
   iframe.src = url;
   iframe.dataset.devUrl = "";
-  iframe.dataset.jarvisLive = "";
+  iframe.dataset.nookLive = "";
   if (status) status.textContent = proj + " → " + entry + "  (no live-reload, clique ↻ ou tecla R apos editar)";
 }
 
@@ -9246,7 +9412,7 @@ function togglePreviewPicker() {
     showToast && showToast("Preview nao carregado", "warn");
     return;
   }
-  if (!iframe.dataset.devUrl && iframe.dataset.jarvisLive !== "1") {
+  if (!iframe.dataset.devUrl && iframe.dataset.nookLive !== "1") {
     showToast && showToast("Picker so funciona com dev server rodando (Vite)", "warn");
     return;
   }
@@ -9254,7 +9420,7 @@ function togglePreviewPicker() {
   applyPickerBtnStyle(previewPickerActive);
   try {
     iframe.contentWindow.postMessage({
-      type: previewPickerActive ? "jarvis-picker:enable" : "jarvis-picker:disable"
+      type: previewPickerActive ? "nook-picker:enable" : "nook-picker:disable"
     }, "*");
   } catch (e) {
     showToast && showToast("Falha ao falar com o iframe: " + e.message, "error");
@@ -9275,9 +9441,9 @@ function addPickedElementToCodeChat(payload) {
 // Referência cross-project: o último elemento pego fica guardado e pode ser
 // inserido no chat de OUTRO projeto (ex: pegar o modal no DS-FIPS e mandar pro
 // chat do lista de mercado: "faz meu modal igual a esse").
-window._jarvisPickedRef = null;
+window._nookPickedRef = null;
 function insertPickedRef() {
-  const ref = window._jarvisPickedRef;
+  const ref = window._nookPickedRef;
   if (!ref) { showToast && showToast("Nenhuma referência pega. Use o 🎯 picker (scroll pra subir até o container) primeiro.", "warn"); return; }
   if (!codeChatPanel || typeof codeChatPanel.setPickedElement !== "function") { showToast && showToast("Chat de código não está pronto", "warn"); return; }
   codeChatPanel.setPickedElement(ref);
@@ -9288,41 +9454,41 @@ function insertPickedRef() {
 }
 
 // ── QA self-heal: runtime errors / ready / snapshot do app no preview ──
-let appErrorBuffer = [];            // erros de runtime do iframe (jarvis-errors.js)
-const _qaReadyWaiters = new Set();  // resolvers esperando jarvis-app:ready
-const _qaSnapWaiters = {};          // id -> resolver de jarvis-app:snapshot
-const _qaStepsWaiters = {};         // id -> resolver de jarvis-app:steps-result
-const _qaDomWaiters = {};           // id -> resolver de jarvis-app:dom
+let appErrorBuffer = [];            // erros de runtime do iframe (nook-errors.js)
+const _qaReadyWaiters = new Set();  // resolvers esperando nook-app:ready
+const _qaSnapWaiters = {};          // id -> resolver de nook-app:snapshot
+const _qaStepsWaiters = {};         // id -> resolver de nook-app:steps-result
+const _qaDomWaiters = {};           // id -> resolver de nook-app:dom
 window._qaAppReady = false;
 window._qaDevlogContext = [];       // últimas linhas de log do dev server (contexto p/ fix)
 
 window.addEventListener("message", (e) => {
   const d = e.data;
   if (!d || typeof d !== "object") return;
-  if (d.type === "jarvis-picker:picked") {
+  if (d.type === "nook-picker:picked") {
     previewPickerActive = false;
     applyPickerBtnStyle(false);
     const pl = d.payload || {};
     try { pl._fromProject = (typeof PROJECT_ROOT === "string" ? PROJECT_ROOT.split("/").pop() : null); } catch {}
-    window._jarvisPickedRef = pl; // guarda p/ inserir em outro projeto (📎)
+    window._nookPickedRef = pl; // guarda p/ inserir em outro projeto (📎)
     addPickedElementToCodeChat(pl);
-  } else if (d.type === "jarvis-picker:cancelled") {
+  } else if (d.type === "nook-picker:cancelled") {
     previewPickerActive = false;
     applyPickerBtnStyle(false);
-  } else if (d.type === "jarvis-app:error" || d.type === "jarvis-app:rejection") {
+  } else if (d.type === "nook-app:error" || d.type === "nook-app:rejection") {
     appErrorBuffer.push(d);
     if (appErrorBuffer.length > 100) appErrorBuffer.splice(0, appErrorBuffer.length - 100);
-  } else if (d.type === "jarvis-app:ready") {
+  } else if (d.type === "nook-app:ready") {
     window._qaAppReady = true;
     _qaReadyWaiters.forEach(f => { try { f(); } catch {} });
     _qaReadyWaiters.clear();
-  } else if (d.type === "jarvis-app:snapshot") {
+  } else if (d.type === "nook-app:snapshot") {
     const w = _qaSnapWaiters[d.id];
     if (w) { delete _qaSnapWaiters[d.id]; w(d); }
-  } else if (d.type === "jarvis-app:steps-result") {
+  } else if (d.type === "nook-app:steps-result") {
     const w = _qaStepsWaiters[d.id];
     if (w) { delete _qaStepsWaiters[d.id]; w(d); }
-  } else if (d.type === "jarvis-app:dom") {
+  } else if (d.type === "nook-app:dom") {
     const w = _qaDomWaiters[d.id];
     if (w) { delete _qaDomWaiters[d.id]; w(d); }
   }
@@ -9346,7 +9512,7 @@ function openPreviewInNewTab() {
 let _previewNavStack = [];
 let _previewNavIdx = -1;
 
-const PREVIEW_PATH_KEY = "jarvis.previewPath";
+const PREVIEW_PATH_KEY = "nook.previewPath";
 function getProjectPreviewPath() {
   try {
     const all = JSON.parse(localStorage.getItem(PREVIEW_PATH_KEY) || "{}");
@@ -10462,8 +10628,8 @@ async function openProjectSwitcher() {
     const r = await fetch("/api/projects");
     projects = (await r.json()).projects || [];
   } catch {}
-  // Always include jarvis itself
-  const all = [{ name: "jarvis", path: "/home/diogo/dev/jarvis" }, ...projects.filter(p => p.path !== "/home/diogo/dev/jarvis")];
+  // Always include nook itself
+  const all = [{ name: "nook", path: "/home/diogo/dev/nook" }, ...projects.filter(p => p.path !== "/home/diogo/dev/nook")];
   const renderList = (q) => {
     const list = overlay.querySelector("#projSwitchList");
     const filtered = q ? all.filter(p => p.name.toLowerCase().includes(q.toLowerCase())) : all;
@@ -10495,21 +10661,21 @@ async function openProjectSwitcher() {
 
 function updateProjectBar() {
   const nameEl = document.getElementById("codeProjectBtnName");
-  if (nameEl) nameEl.textContent = (PROJECT_ROOT || "").split("/").filter(Boolean).pop() || "?";
+  if (nameEl) nameEl.textContent = PROJECT_ROOT === "/home/diogo/dev/nook" ? "Nook" : ((PROJECT_ROOT || "").split("/").filter(Boolean).pop() || "?");
   const hubBtn = document.getElementById("codeProjectHubBtn");
   if (hubBtn) hubBtn.style.display = (projectMetaCache && projectMetaCache.hubNote) ? "" : "none";
   const briefBtn = document.getElementById("codeProjectBriefBtn");
   if (briefBtn) briefBtn.style.display = projectBriefRel ? "" : "none";
   const bancoTab = document.getElementById("centerViewBancoBtn");
-  const bancoOn = !!(PROJECT_ROOT && PROJECT_ROOT !== "/home/diogo/dev/jarvis");
+  const bancoOn = !!(PROJECT_ROOT && PROJECT_ROOT !== "/home/diogo/dev/nook");
   if (bancoTab) bancoTab.style.display = bancoOn ? "" : "none";
   if (!bancoOn && typeof _codeCenterCurrentView !== "undefined" && _codeCenterCurrentView === "banco") setCodeCenterView("editor");
   // Preview do Hub = ele mesmo vivo em :3000 (dogfooding, com picker). Canvas
   // (grid de componentes) pressupoe app Vite, entao fica escondido pro Hub.
-  const isJarvis = PROJECT_ROOT === "/home/diogo/dev/jarvis";
+  const isNook = PROJECT_ROOT === "/home/diogo/dev/nook";
   const canvasBtn = document.getElementById("centerViewCanvasBtn");
-  if (canvasBtn) canvasBtn.style.display = isJarvis ? "none" : "";
-  if (isJarvis && typeof _codeCenterCurrentView !== "undefined" && _codeCenterCurrentView === "canvas") {
+  if (canvasBtn) canvasBtn.style.display = isNook ? "none" : "";
+  if (isNook && typeof _codeCenterCurrentView !== "undefined" && _codeCenterCurrentView === "canvas") {
     setCodeCenterView("editor");
   }
 }
@@ -10973,7 +11139,7 @@ function initCodeChatPanel() {
     name: "Nook",
     color: "var(--accent)",
     provider: "claude",
-    model: getAsst("jarvis").model || "opus",
+    model: getAsst("nook").model || "opus",
     compact: true,
     showAttach: true,
     showModel: true,
@@ -11189,7 +11355,7 @@ function qaRequestSnapshot(timeout) {
     let done = false;
     const to = setTimeout(() => { if (!done) { done = true; delete _qaSnapWaiters[id]; resolve(null); } }, timeout);
     _qaSnapWaiters[id] = (payload) => { if (!done) { done = true; clearTimeout(to); resolve(payload); } };
-    try { iframe.contentWindow.postMessage({ type: "jarvis-app:snapshot-request", id }, "*"); }
+    try { iframe.contentWindow.postMessage({ type: "nook-app:snapshot-request", id }, "*"); }
     catch { clearTimeout(to); resolve(null); }
   });
 }
@@ -11293,7 +11459,7 @@ try {
   }
 } catch {}
 function qaSpeed() {
-  const s = localStorage.getItem("jarvis.qaSpeed") || "normal";
+  const s = localStorage.getItem("nook.qaSpeed") || "normal";
   return (["slow", "normal", "fast"].includes(s)) ? s : "normal";
 }
 function qaSpeedMeta(s) {
@@ -11312,7 +11478,7 @@ function applyQaSpeedChip(el) {
 function cycleQaSpeed(el) {
   const order = ["slow", "normal", "fast"];
   const next = order[(order.indexOf(qaSpeed()) + 1) % order.length];
-  localStorage.setItem("jarvis.qaSpeed", next);
+  localStorage.setItem("nook.qaSpeed", next);
   applyQaSpeedChip(el);
   const m = qaSpeedMeta(next);
   showToast("Velocidade do QA: " + m.icon + " " + m.label, "info");
@@ -11322,7 +11488,7 @@ function cycleQaSpeed(el) {
 async function qaTestNow() {
   if (typeof codeChatPanel === "undefined" || !codeChatPanel) { showToast && showToast("Code Mode não está pronto", "warn"); return; }
   if (_qaRunning) { showToast && showToast("QA já está rodando", "info"); return; }
-  if (typeof PROJECT_ROOT === "string" && PROJECT_ROOT === "/home/diogo/dev/jarvis") { showToast && showToast("QA roda em projetos (~/dev/projetos), não no próprio Hub", "warn"); return; }
+  if (typeof PROJECT_ROOT === "string" && PROJECT_ROOT === "/home/diogo/dev/nook") { showToast && showToast("QA roda em projetos (~/dev/projetos), não no próprio Hub", "warn"); return; }
   // LÊ O TEXTO DO CHAT como alvo (ex: "testa o botão excluir comprados"). O QA acha o
   // botão pelo texto. Se não tiver texto, usa o alvo do picker (se houver) ou o CRUD.
   const inpEl = document.getElementById("codeChatPanel_cp_input");
@@ -11366,17 +11532,17 @@ function qaRunInteraction(kind, steps, timeout) {
   if (!iframe || !iframe.contentWindow) return Promise.resolve(null);
   const id = "steps_" + Date.now() + "_" + Math.floor(performance.now());
   const opts = { speed: qaSpeed() };
-  const msg = kind === "smoke" ? { type: "jarvis-app:smoke", id, opts }
-    : kind === "crud" ? { type: "jarvis-app:crud", id, opts }
-    : kind === "target" ? { type: "jarvis-app:test-target", id, target: steps || {}, opts }
-    : { type: "jarvis-app:run-steps", id, steps: steps || [], opts };
+  const msg = kind === "smoke" ? { type: "nook-app:smoke", id, opts }
+    : kind === "crud" ? { type: "nook-app:crud", id, opts }
+    : kind === "target" ? { type: "nook-app:test-target", id, target: steps || {}, opts }
+    : { type: "nook-app:run-steps", id, steps: steps || [], opts };
   return new Promise(resolve => {
     let done = false;
     const finish = (v) => { if (!done) { done = true; clearTimeout(to); clearInterval(rp); delete _qaStepsWaiters[id]; resolve(v); } };
     _qaStepsWaiters[id] = (payload) => finish(payload);
     const post = () => { try { iframe.contentWindow.postMessage(msg, "*"); } catch {} };
     post();
-    // Re-posta periodicamente: o jarvis-errors.js pode ainda nao ter anexado o
+    // Re-posta periodicamente: o nook-errors.js pode ainda nao ter anexado o
     // listener quando o primeiro post sai (iframe recem-recarregado).
     const rp = setInterval(post, 2500);
     const to = setTimeout(() => finish(null), timeout || 25000);
@@ -11411,7 +11577,7 @@ function qaDescribeDOM(timeout) {
     let done = false;
     const finish = (v) => { if (!done) { done = true; clearTimeout(to); clearInterval(rp); delete _qaDomWaiters[id]; resolve(v); } };
     _qaDomWaiters[id] = (payload) => finish(payload);
-    const post = () => { try { iframe.contentWindow.postMessage({ type: "jarvis-app:describe", id }, "*"); } catch {} };
+    const post = () => { try { iframe.contentWindow.postMessage({ type: "nook-app:describe", id }, "*"); } catch {} };
     post();
     const rp = setInterval(post, 2000);
     const to = setTimeout(() => finish(null), timeout || 12000);
@@ -11483,7 +11649,7 @@ async function runQaLoop(panel, sendFn) {
     if (sIcon) sIcon.innerHTML = (opts && opts.done) ? "&#10003;" : '<span style="display:inline-block;animation:tkspin 0.8s linear infinite">🧪</span>';
     if (sText) sText.textContent = txt;
   };
-  const MAX = Math.max(1, Math.min(8, parseInt(localStorage.getItem("jarvis.qaMaxIters") || "4", 10) || 4));
+  const MAX = Math.max(1, Math.min(8, parseInt(localStorage.getItem("nook.qaMaxIters") || "4", 10) || 4));
   const startedAt = Date.now();
   const GLOBAL_TIMEOUT = 6 * 60 * 1000;
   const aborted = () => panel._abort && panel._abort.signal && panel._abort.signal.aborted;
@@ -11650,7 +11816,7 @@ function _pickerChipHtml(ctx, idx, total) {
   const txt = ctx.text ? ' "' + String(ctx.text).slice(0, 50) + (ctx.text.length > 50 ? '…' : '') + '"' : "";
   const dim = ctx.rect ? ctx.rect.width + "x" + ctx.rect.height : "";
   const isDsProject = !!(projectMetaCache && projectMetaCache.kind === "design-system");
-  const showCopyBtn = ctx.jarvisSrc && isDsProject;
+  const showCopyBtn = ctx.nookSrc && isDsProject;
   const numLabel = total > 1 ? ('<span style="background:#ec4899;color:#fff;border-radius:4px;padding:0 5px;font-size:10px;margin-right:5px">' + (idx + 1) + '</span>') : "";
   return '<div style="display:flex;gap:8px;align-items:flex-start;background:rgba(236,72,153,0.10);border:1px solid #ec4899;border-radius:8px;padding:6px;max-width:100%">'
     +   (ctx.screenshot
@@ -11661,7 +11827,7 @@ function _pickerChipHtml(ctx, idx, total) {
     +     (ctx.text ? '<div style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:rgba(236,72,153,0.75)">' + escapeHtml(txt.trim()).replace(/<br>/g,"") + '</div>' : "")
     +     (dim ? '<div style="color:rgba(236,72,153,0.6);font-size:10px;margin-top:2px">' + dim + 'px</div>' : "")
     +     (ctx._fromProject ? '<div style="color:rgba(236,72,153,0.7);font-size:10px;margin-top:2px">📦 ' + escapeHtml(ctx._fromProject) + '</div>' : "")
-    +     (ctx.jarvisSrc ? '<div style="color:rgba(236,72,153,0.7);font-size:10px;margin-top:2px">📄 ' + escapeHtml(ctx.jarvisSrc.split(":")[0]) + '</div>' : "")
+    +     (ctx.nookSrc ? '<div style="color:rgba(236,72,153,0.7);font-size:10px;margin-top:2px">📄 ' + escapeHtml(ctx.nookSrc.split(":")[0]) + '</div>' : "")
     +   '</div>'
     +   '<div style="display:flex;flex-direction:column;gap:4px;align-items:flex-end">'
     +     '<button onclick="qaTestPickedTarget(' + idx + ')" title="Testar SÓ este elemento com o QA (ex: clicar e verificar). O alvo persiste — depois do ajuste, o QA re-testa ele." style="background:#10b981;border:none;color:white;cursor:pointer;font-size:10px;padding:3px 8px;border-radius:4px;font-family:ui-sans-serif,system-ui">▶ Testar</button>'
@@ -11673,9 +11839,9 @@ function _pickerChipHtml(ctx, idx, total) {
 
 async function openDsCopyModal(idx) {
   const list = (codeChatPanel && codeChatPanel.pickedElements) || [];
-  const ctx = (typeof idx === "number" ? list[idx] : list.find(e => e.jarvisSrc)) || null;
-  if (!ctx || !ctx.jarvisSrc) { showToast("Sem origem rastreada", "warn"); return; }
-  const sourceFile = ctx.jarvisSrc.split(":")[0];
+  const ctx = (typeof idx === "number" ? list[idx] : list.find(e => e.nookSrc)) || null;
+  if (!ctx || !ctx.nookSrc) { showToast("Sem origem rastreada", "warn"); return; }
+  const sourceFile = ctx.nookSrc.split(":")[0];
   // Lista projetos disponíveis (exceto o DS atual)
   let projects = [];
   try {
@@ -11773,7 +11939,7 @@ function createChatPanel(cfg) {
       if (projectConvs.length) {
         convId = projectConvs[0].id;
       } else {
-        convId = createConversation("jarvis", projectKey);
+        convId = createConversation("nook", projectKey);
       }
       panel.convId = convId;
       return convId;
@@ -11914,17 +12080,17 @@ function createChatPanel(cfg) {
 
   // Effort (Opus power) — persist choice; default "high" (= CLI default, so unchanged until bumped)
   if (effortSel) {
-    const savedEffort = localStorage.getItem("jarvis_code_effort") || "high";
+    const savedEffort = localStorage.getItem("nook_code_effort") || "high";
     if ([...effortSel.options].some(o => o.value === savedEffort)) effortSel.value = savedEffort;
     effortSel.addEventListener("change", function() {
-      localStorage.setItem("jarvis_code_effort", effortSel.value);
+      localStorage.setItem("nook_code_effort", effortSel.value);
       showToast("Potência: " + (effortSel.options[effortSel.selectedIndex] || {}).text, "info");
     });
   }
 
   // QA auto-test (self-heal) — restore persisted state into the composer chip
   if (isCodePanel) {
-    panel.qaMode = localStorage.getItem("jarvis.qaMode") === "1";
+    panel.qaMode = localStorage.getItem("nook.qaMode") === "1";
     const qaChip = el.querySelector("[data-qa-toggle]");
     if (qaChip) qaChip.classList.toggle("on", panel.qaMode);
     applyQaSpeedChip(el.querySelector("[data-qa-speed]"));
@@ -11952,9 +12118,9 @@ function createChatPanel(cfg) {
     msgsEl.addEventListener("drop", function(e) {
       e.preventDefault();
       msgsEl.classList.remove("drag-over");
-      // 1. Internal jarvis path (file tree drag)
-      const jpath = e.dataTransfer.getData("application/x-jarvis-path");
-      if (jpath) { panelHandleJarvisPath(jpath); return; }
+      // 1. Internal nook path (file tree drag)
+      const jpath = e.dataTransfer.getData("application/x-nook-path");
+      if (jpath) { panelHandleNookPath(jpath); return; }
       // 2. OS files
       if (e.dataTransfer.files.length) panelHandleFiles(e.dataTransfer.files);
     });
@@ -11963,14 +12129,14 @@ function createChatPanel(cfg) {
       inputEl.addEventListener("dragover", function(e) { e.preventDefault(); e.dataTransfer.dropEffect = "copy"; });
       inputEl.addEventListener("drop", function(e) {
         e.preventDefault();
-        const jpath = e.dataTransfer.getData("application/x-jarvis-path");
-        if (jpath) { panelHandleJarvisPath(jpath); return; }
+        const jpath = e.dataTransfer.getData("application/x-nook-path");
+        if (jpath) { panelHandleNookPath(jpath); return; }
         if (e.dataTransfer.files.length) panelHandleFiles(e.dataTransfer.files);
       });
     }
   }
 
-  async function panelHandleJarvisPath(filePath) {
+  async function panelHandleNookPath(filePath) {
     const filename = filePath.split("/").pop();
     const entry = { filename, kind: /\.(png|jpe?g|gif|webp|svg)$/i.test(filename) ? "image" : "text", uploaded: false, previewUrl: null };
     panel.attachments.push(entry);
@@ -12157,7 +12323,7 @@ function createChatPanel(cfg) {
       sysPrompt += "\n\nREGRAS:\n- NUNCA diga que é Claude, GPT, Anthropic ou qualquer modelo de IA\n- Sempre se apresente como " + name + "\n- Responda em português brasileiro";
     }
 
-    const model = modelSel ? modelSel.value : (cfg.model || getAsst("jarvis").model || "opus");
+    const model = modelSel ? modelSel.value : (cfg.model || getAsst("nook").model || "opus");
 
     // Route through Python core when BMAD agent active in code panel (sidecar
     // loads .md prompt + injects hub context via obsidian_bridge).
@@ -12259,7 +12425,7 @@ function createChatPanel(cfg) {
     panel.qaMode = !panel.qaMode;
     if (el) el.classList.toggle("on", panel.qaMode);
     setQaExtras(el && el.parentElement, panel.qaMode);
-    localStorage.setItem("jarvis.qaMode", panel.qaMode ? "1" : "0");
+    localStorage.setItem("nook.qaMode", panel.qaMode ? "1" : "0");
     showToast(panel.qaMode ? "🧪 QA auto-test ON — ao terminar, testo o app e tento corrigir sozinho" : "QA auto-test OFF", "info");
   };
   panel.clear = function() { panel.history = []; panel.attachments = []; persistHistory(); renderPanelAttachBar(); panel.render(); };
@@ -12321,13 +12487,13 @@ function renderBmadArtifactSuggestion(m) {
 async function openBmadArtifactModal(cacheId) {
   const cached = (window._bmadCache || {})[cacheId];
   if (!cached) return;
-  let projetos = ["jarvis"];
+  let projetos = ["nook"];
   try {
     const r = await fetch("/api/core/projetos");
     if (r.ok) projetos = (await r.json()).projetos || projetos;
   } catch {}
   // Best guess for project from current code mode root, otherwise current chat conv title
-  let defaultProj = "jarvis";
+  let defaultProj = "nook";
   if (typeof PROJECT_ROOT === "string") {
     const base = PROJECT_ROOT.split("/").filter(Boolean).pop() || "";
     if (projetos.includes(base)) defaultProj = base;
@@ -12865,7 +13031,7 @@ function updateTokenCounter() {
 
   // Build what would be sent
   let sysText = "";
-  if (asst && asst.id !== "jarvis" && asst.systemPrompt) sysText = asst.systemPrompt;
+  if (asst && asst.id !== "nook" && asst.systemPrompt) sysText = asst.systemPrompt;
   const filtered = filterMessagesByHistory(conv.messages);
   const inputText = document.getElementById("input")?.value || "";
   const allText = sysText + filtered.map(m => m.content || "").join("") + inputText;
@@ -13621,7 +13787,7 @@ function openHubAdrModal(prefill) {
   prefill = prefill || {};
   const fields =
     _input("adrTitle", "Título da decisão *", "ex: Usar Supabase RLS por owner", prefill.title)
-    + _input("adrProjeto", "Projeto", "ex: jarvis, fips, nookweb", prefill.projeto)
+    + _input("adrProjeto", "Projeto", "ex: nook, fips, nookweb", prefill.projeto)
     + _ta("adrContexto", "Contexto", "Por que essa decisão é necessária? Qual o problema?", prefill.contexto, 3)
     + _ta("adrDecisao", "Decisão *", "O que foi decidido", prefill.decisao, 3)
     + _ta("adrConsequencias", "Consequências", "Impactos esperados (positivos e negativos)", prefill.consequencias, 2)
@@ -13835,6 +14001,7 @@ function jModal(opts) {
       const b = document.createElement("button");
       const styles = {
         primary: "background:var(--accent);border:none;color:white;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500",
+        accent:  "background:var(--accent-soft);border:1px solid var(--accent-soft);color:var(--accent);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500",
         success: "background:#16a34a;border:none;color:white;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500",
         danger:  "background:#dc2626;border:none;color:white;padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:500",
         ghost:   "background:transparent;border:1px solid var(--border);color:var(--text-muted);padding:6px 14px;border-radius:6px;cursor:pointer;font-size:12px",
@@ -13875,10 +14042,10 @@ function jModal(opts) {
 
 // ── Toasts (queue + variants) ───────────────────────────────────────────────
 function _toastContainer() {
-  let c = document.getElementById("jarvisToastContainer");
+  let c = document.getElementById("nookToastContainer");
   if (!c) {
     c = document.createElement("div");
-    c.id = "jarvisToastContainer";
+    c.id = "nookToastContainer";
     c.style.cssText = "position:fixed;bottom:38px;right:18px;z-index:10000;display:flex;flex-direction:column;gap:8px;align-items:flex-end;pointer-events:none";
     document.body.appendChild(c);
   }
@@ -14060,7 +14227,7 @@ function openInboxView() {
 }
 
 // ── Settings page (Ctrl+,) ──────────────────────────────────────────────────
-const SETTINGS_KEY = "jarvis-hub:settings";
+const SETTINGS_KEY = "nook-hub:settings";
 function getSettings() {
   try { return JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}"); } catch { return {}; }
 }
@@ -14115,7 +14282,7 @@ async function openSettings() {
   const voiceRow = '<select id="setVoiceModel" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;width:100%">'
     + ["tiny", "base", "small", "medium", "large-v3"].map(m => '<option value="' + m + '"' + ((s.voiceModel || "base") === m ? " selected" : "") + '>' + m + (m === "base" ? " (default)" : m === "small" ? " (mais preciso)" : m === "tiny" ? " (mais rápido)" : "") + '</option>').join("")
     + '</select>'
-    + '<div style="font-size:10px;color:var(--text-muted);margin-top:4px">Aplica no próximo restart do sidecar (export JARVIS_WHISPER_MODEL no keeper).</div>';
+    + '<div style="font-size:10px;color:var(--text-muted);margin-top:4px">Aplica no próximo restart do sidecar (export NOOK_WHISPER_MODEL no keeper).</div>';
 
   // History limit (chat context)
   const historyRow = '<input id="setHistoryLimit" type="number" min="2" max="50" value="' + (state?.profile?.historyLimit || 6) + '" style="background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px 10px;border-radius:6px;font-size:12px;width:100px"> mensagens recentes';
@@ -14124,8 +14291,8 @@ async function openSettings() {
   const infoRow = '<div style="font-family:ui-monospace,monospace;font-size:11px;color:var(--text-muted);background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px;line-height:1.6">'
     + 'Hub: <span style="color:var(--text)">~/dev/_hub</span><br>'
     + 'Sidecar: <span style="color:var(--text)">http://127.0.0.1:3001</span><br>'
-    + 'Cache: <span style="color:var(--text)">~/.cache/jarvis</span><br>'
-    + 'BMAD agents: <span style="color:var(--text)">~/dev/jarvis/bmad/agents/</span>'
+    + 'Cache: <span style="color:var(--text)">~/.cache/nook</span><br>'
+    + 'BMAD agents: <span style="color:var(--text)">~/dev/nook/bmad/agents/</span>'
     + '</div>';
 
   // Telegram setup hint
@@ -14133,7 +14300,7 @@ async function openSettings() {
     + 'Setup:<br>'
     + '1. /newbot no @BotFather → token<br>'
     + '2. Mensagem pro bot, depois <code>https://api.telegram.org/bot&lt;TOKEN&gt;/getUpdates</code> → chat.id<br>'
-    + '3. <code>export TELEGRAM_BOT_TOKEN=...; export TELEGRAM_CHAT_ID=...</code> no <code>~/dev/bin/jarvis-core-keeper.sh</code><br>'
+    + '3. <code>export TELEGRAM_BOT_TOKEN=...; export TELEGRAM_CHAT_ID=...</code> no <code>~/dev/bin/nook-core-keeper.sh</code><br>'
     + '4. Restart sidecar'
     + '</div>'
     + '<button id="setTgTest" style="margin-top:6px;background:var(--surface2);border:1px solid var(--border);color:var(--text);padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px">Testar notificação</button>';
@@ -14177,7 +14344,7 @@ async function openSettings() {
   });
   body.querySelector("#setVoiceModel").onchange = (e) => {
     const cur = getSettings(); cur.voiceModel = e.target.value; saveSettings(cur);
-    showToast("Salvo. Restart do sidecar pra aplicar (export JARVIS_WHISPER_MODEL=" + cur.voiceModel + ")", "info", { duration: 5000 });
+    showToast("Salvo. Restart do sidecar pra aplicar (export NOOK_WHISPER_MODEL=" + cur.voiceModel + ")", "info", { duration: 5000 });
   };
   body.querySelector("#setHistoryLimit").onchange = (e) => {
     const v = Math.max(2, Math.min(50, parseInt(e.target.value, 10) || 6));
@@ -14464,11 +14631,11 @@ async function openMacroFromNl() {
   setInterval(refreshInbox, 60 * 1000);
 
   if (Object.keys(state.conversations).length === 0) {
-    createConversation("jarvis");
+    createConversation("nook");
   } else if (!state.activeId || !getConv(state.activeId)) {
     const cs = sortedConvs();
     state.activeId = cs.length > 0 ? cs[0].id : null;
-    if (!state.activeId) createConversation("jarvis");
+    if (!state.activeId) createConversation("nook");
     saveState();
   }
 
@@ -15249,7 +15416,7 @@ async function connectUserChrome() {
     const r = await fetch("/api/browser/launch-chrome", { method: "POST" });
     const d = await r.json();
     if (d.cdpUp) {
-      showToast("✓ Chrome acoplado em ~/.jarvis-chrome-profile. Workers usam essa janela.", "success");
+      showToast("✓ Chrome acoplado em ~/.nook-chrome-profile. Workers usam essa janela.", "success");
       if (typeof refreshBrowserStatus === "function") refreshBrowserStatus();
       if (typeof refreshDiagnostics === "function") refreshDiagnostics();
       return;
@@ -15308,8 +15475,8 @@ function bwAbort() {
   }
 }
 
-const CW_MACRO_KEY = "jarvis-hub:browser-macros";  // legacy, used only for migration
-const CW_MIGRATION_KEY = "jarvis-hub:macros-migrated-to-hub";
+const CW_MACRO_KEY = "nook-hub:browser-macros";  // legacy, used only for migration
+const CW_MIGRATION_KEY = "nook-hub:macros-migrated-to-hub";
 
 async function cwMigrateMacrosToHub() {
   if (localStorage.getItem(CW_MIGRATION_KEY) === "1") return;
@@ -16460,7 +16627,7 @@ function bwRenderSteps() {
   el.innerHTML = browserWorker.recording.map((s, i) => {
     const ok = s.ok !== false;
     const color = ok ? "#10b981" : "#ef4444";
-    const tool = (s.tool || "").replace("mcp__jarvis-browser__", "");
+    const tool = (s.tool || "").replace("mcp__nook-browser__", "");
     const inputStr = s.input ? Object.entries(s.input).map(([k,v]) => k + "=" + JSON.stringify(v).slice(0,40)).join(" ") : "";
     return '<div style="padding:4px 6px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:2px">'
       + '<div style="display:flex;align-items:center;gap:4px"><span style="color:' + color + '">' + (ok ? '&#10003;' : '&#10007;') + '</span> <strong style="font-size:10px">' + (i+1) + '. ' + escapeHtml(tool) + '</strong></div>'
@@ -16557,7 +16724,7 @@ async function bwSend(textOverride) {
             fullText += evt.text;
             streamDiv.textContent = fullText;
             wrap.scrollTop = wrap.scrollHeight;
-          } else if (evt.kind === "tool" && evt.name && evt.name.includes("jarvis-browser")) {
+          } else if (evt.kind === "tool" && evt.name && evt.name.includes("nook-browser")) {
             browserWorker._toolCount = (browserWorker._toolCount || 0) + 1;
             browserWorker.recording.push({
               tool: evt.name, input: evt.input || {}, ts: Date.now(), id: evt.id,
@@ -16640,7 +16807,7 @@ if (state.currentMode && state.currentMode !== "chat") {
 
 // ── Resizable panels ────────────────────────────────────────────────────────
 (function initResizers() {
-  const STORAGE_KEY = "jarvis-hub:panelWidths";
+  const STORAGE_KEY = "nook-hub:panelWidths";
   const widths = (() => { try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); } catch { return {}; } })();
   const save = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(widths)); } catch {} };
 
@@ -16699,7 +16866,7 @@ if (state.currentMode && state.currentMode !== "chat") {
   bar.className = "j-statusbar";
   bar.innerHTML =
     '<span class="j-sb-item clickable" id="sbSidecar" title="Sidecar Python (porta 3001)"><span class="j-sb-dot"></span> sidecar</span>'
-    + '<span class="j-sb-item clickable" id="sbProject" title="Projeto ativo — clique pra trocar">📁 <span id="sbProjectName">jarvis</span></span>'
+    + '<span class="j-sb-item clickable" id="sbProject" title="Projeto ativo — clique pra trocar">📁 <span id="sbProjectName">Nook</span></span>'
     + '<span class="j-sb-item clickable" id="sbBranch" title="Branch git — clique pra trocar"><span id="sbBranchName" style="color:var(--accent)"></span></span>'
     + '<span class="j-sb-item" id="sbDirty" style="display:none;color:#eab308" title="Tabs com mudanças não salvas"><span></span></span>'
     + '<span class="j-sb-spacer"></span>'
@@ -16750,10 +16917,10 @@ if (state.currentMode && state.currentMode !== "chat") {
     } catch {}
     // Project + branch
     if (typeof PROJECT_ROOT !== "undefined" && PROJECT_ROOT) {
-      bar.querySelector("#sbProjectName").textContent = PROJECT_ROOT.split("/").filter(Boolean).pop() || "?";
+      bar.querySelector("#sbProjectName").textContent = PROJECT_ROOT === "/home/diogo/dev/nook" ? "Nook" : (PROJECT_ROOT.split("/").filter(Boolean).pop() || "?");
     }
     try {
-      const r = await fetch("/api/git-status?path=" + encodeURIComponent(typeof PROJECT_ROOT !== "undefined" ? PROJECT_ROOT : "/home/diogo/dev/jarvis"));
+      const r = await fetch("/api/git-status?path=" + encodeURIComponent(typeof PROJECT_ROOT !== "undefined" ? PROJECT_ROOT : "/home/diogo/dev/nook"));
       const d = await r.json();
       const bn = bar.querySelector("#sbBranchName");
       bn.textContent = d.branch ? "⎇ " + d.branch : "";

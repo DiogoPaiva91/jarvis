@@ -1,4 +1,4 @@
-from jarvis_core import bmad_loader as bl
+from nook_core import bmad_loader as bl
 
 
 def test_list_agents():

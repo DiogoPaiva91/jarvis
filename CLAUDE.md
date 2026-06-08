@@ -1,10 +1,10 @@
-# CLAUDE.md — Jarvis Hub
+# CLAUDE.md — Nook Studio
 
 Instruções pra IA (Claude Code, agentes) trabalhando neste repo. Leia antes de qualquer alteração.
 
 ## Contexto
 
-Jarvis Hub é um workspace pessoal multi-modo do Diogo (solo dev, pt-BR). Roda local, sem multiusuário, sem deploy. Ver `README.md` pra overview do produto.
+Nook Studio é um workspace pessoal multi-modo do Diogo (solo dev, pt-BR). Roda local, sem multiusuário, sem deploy. Ver `README.md` pra overview do produto.
 
 ## Arquitetura — pontos críticos
 
@@ -12,7 +12,7 @@ Jarvis Hub é um workspace pessoal multi-modo do Diogo (solo dev, pt-BR). Roda l
 
 - `server.js` é único (~3000 linhas, todas as rotas `/api/*`). Não extraia pra microserviços. Crie módulos só em `lib/` quando ficar > 200 linhas relacionadas.
 - `public/index.html` é single-file (~600 KB, todos os modos + Builder + Command Palette + Settings). Não introduza bundler/Vite/React no frontend do **próprio Hub** — vanilla JS é a escolha. Frameworks ficam nos projetos dos usuários (`~/dev/projetos/<nome>`), não aqui.
-- `jarvis_core/` é sidecar Python aiohttp em `:3001`. Hub Node faz proxy via `/api/core/*`.
+- `nook_core/` é sidecar Python aiohttp em `:3001`. Hub Node faz proxy via `/api/core/*`.
 
 ## Regras de edição
 
@@ -44,7 +44,7 @@ Toda lógica do Builder vive em `public/index.html`, marcado por `// ── Buil
 
 ## BMAD agents
 
-7 agentes em `bmad/agents/<name>.md` (PT-BR). Carregados por `jarvis_core/bmad_loader.py`. Catálogo de tarefas + filenames de output em `BMAD_AGENT_TASKS` no `server.js`. Ao adicionar agente novo:
+7 agentes em `bmad/agents/<name>.md` (PT-BR). Carregados por `nook_core/bmad_loader.py`. Catálogo de tarefas + filenames de output em `BMAD_AGENT_TASKS` no `server.js`. Ao adicionar agente novo:
 1. Cria `bmad/agents/<name>.md`
 2. Adiciona em `bmad_loader.py` (`AGENTS` dict)
 3. Atualiza teste `tests/test_bmad_loader.py`
@@ -53,7 +53,7 @@ Toda lógica do Builder vive em `public/index.html`, marcado por `// ── Buil
 
 ## Persistência
 
-- SQLite (`data/jarvis.db`): conversas, workers. Migrations em `lib/db.js` se necessário.
+- SQLite (`data/nook.db`): conversas, workers. Migrations em `lib/db.js` se necessário.
 - LocalStorage no browser: settings, panel widths, preview state.
 - Filesystem: hub Obsidian (`~/dev/_hub`), projetos (`~/dev/projetos/<nome>`), uploads (`uploads/<scope>/`).
 

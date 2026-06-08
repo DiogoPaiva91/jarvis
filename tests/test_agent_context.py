@@ -1,5 +1,5 @@
-from jarvis_core import agent_context as ac
-from jarvis_core import obsidian_bridge as ob
+from nook_core import agent_context as ac
+from nook_core import obsidian_bridge as ob
 
 
 def test_enrich_skips_when_agent_outside_whitelist(tmp_hub):

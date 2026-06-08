@@ -1,4 +1,4 @@
-"""HTTP sidecar (porta 3001): expõe Agent SDK + BMAD + hub para o Node Jarvis."""
+"""HTTP sidecar (porta 3001): expõe Agent SDK + BMAD + hub para o Node Nook."""
 import asyncio
 import json
 import os
@@ -9,7 +9,7 @@ from pathlib import Path
 
 from aiohttp import web
 
-# Ensure jarvis_core is importable when run as `python -m jarvis_core.server`
+# Ensure nook_core is importable when run as `python -m nook_core.server`
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from claude_agent_sdk import (  # noqa: E402
@@ -23,17 +23,17 @@ from claude_agent_sdk import (  # noqa: E402
     ResultMessage,
 )
 
-from jarvis_core.chat_sdk import handle_sdk_chat, handle_sdk_permission  # noqa: E402
-from jarvis_core.bmad_loader import load_agent, list_agents  # noqa: E402
-from jarvis_core.agent_context import enrich_prompt, enrich_prompt_async, get_hub_summary, read_user_profile  # noqa: E402
-from jarvis_core import embeddings as embed  # noqa: E402
-from jarvis_core import obsidian_bridge as hub  # noqa: E402
-from jarvis_core.browser import (  # noqa: E402
+from nook_core.chat_sdk import handle_sdk_chat, handle_sdk_permission  # noqa: E402
+from nook_core.bmad_loader import load_agent, list_agents  # noqa: E402
+from nook_core.agent_context import enrich_prompt, enrich_prompt_async, get_hub_summary, read_user_profile  # noqa: E402
+from nook_core import embeddings as embed  # noqa: E402
+from nook_core import obsidian_bridge as hub  # noqa: E402
+from nook_core.browser import (  # noqa: E402
     make_browser_mcp, BROWSER_TOOL_NAMES,
     MANUAL_SESSION, SCHEDULED_SESSION,
 )
 
-PORT = int(os.environ.get("JARVIS_CORE_PORT", "3001"))
+PORT = int(os.environ.get("NOOK_CORE_PORT", "3001"))
 
 MODE_TOOLS = {
     "chat": [],
@@ -46,15 +46,15 @@ MODE_TOOLS = {
 
 DEFAULT_PROMPTS = {
     "chat": (
-        "Você é Jarvis no MODO CHAT. Conversação rápida, brainstorm, planejamento "
+        "Você é Nook no MODO CHAT. Conversação rápida, brainstorm, planejamento "
         "leve. Português brasileiro, direto. Sem tools."
     ),
     "cowork": (
-        "Você é Jarvis no MODO COWORK. Foco: automação, file system, web research. "
+        "Você é Nook no MODO COWORK. Foco: automação, file system, web research. "
         "Português brasileiro, direto. Use tools quando necessário."
     ),
     "browser": (
-        "Você é Jarvis no MODO BROWSER. Você controla o Chrome do Diogo via tools "
+        "Você é Nook no MODO BROWSER. Você controla o Chrome do Diogo via tools "
         "browser_open, browser_click, browser_type, browser_press, browser_extract, "
         "browser_screenshot, browser_wait, browser_url, browser_hover, browser_scroll, "
         "browser_select_option, browser_upload, browser_parallel, browser_ask_user. "
@@ -70,7 +70,7 @@ DEFAULT_PROMPTS = {
         "ANTES de tentar — vai pausar até a resposta. NÃO chute valores."
     ),
     "codigo": (
-        "Você é Jarvis no MODO CÓDIGO. Foco: dev, refactor, debug, BMAD artefatos. "
+        "Você é Nook no MODO CÓDIGO. Foco: dev, refactor, debug, BMAD artefatos. "
         "Português brasileiro, direto. Antes de gerar PRD/arquitetura, consulte o "
         "hub. Após decisões, sugira salvar como ADR."
     ),
@@ -156,11 +156,11 @@ async def handle_chat(request: web.Request) -> web.StreamResponse:
             if cand.exists():
                 cwd = str(cand)
         elif mode == "codigo":
-            cwd = str(Path.home() / "dev" / "jarvis")
+            cwd = str(Path.home() / "dev" / "nook")
 
         mcp_servers = {}
         if mode == "browser":
-            mcp_servers["jarvis-browser"] = make_browser_mcp(MANUAL_SESSION)
+            mcp_servers["nook-browser"] = make_browser_mcp(MANUAL_SESSION)
 
         options = ClaudeAgentOptions(
             system_prompt=system_prompt,
@@ -242,7 +242,7 @@ async def handle_browser_task(request: web.Request) -> web.Response:
     options = ClaudeAgentOptions(
         system_prompt=system,
         allowed_tools=BROWSER_TOOL_NAMES,
-        mcp_servers={"jarvis-browser": make_browser_mcp(MANUAL_SESSION)},
+        mcp_servers={"nook-browser": make_browser_mcp(MANUAL_SESSION)},
     )
     final_text = ""
     tools_used = []
@@ -337,7 +337,7 @@ async def handle_hub_padrao(request: web.Request) -> web.Response:
 
 
 async def handle_projetos_list(request: web.Request) -> web.Response:
-    return web.json_response({"projetos": ["jarvis"] + hub.list_projetos()})
+    return web.json_response({"projetos": ["nook"] + hub.list_projetos()})
 
 
 async def handle_bmad_artifact(request: web.Request) -> web.Response:
@@ -614,7 +614,7 @@ async def handle_hub_git_status(request: web.Request) -> web.Response:
 
 
 async def handle_browser_status(request: web.Request) -> web.Response:
-    from jarvis_core.browser import get_pending_question
+    from nook_core.browser import get_pending_question
     return web.json_response({
         "manual": MANUAL_SESSION.status(),
         "scheduled": SCHEDULED_SESSION.status(),
@@ -623,7 +623,7 @@ async def handle_browser_status(request: web.Request) -> web.Response:
 
 
 async def handle_browser_answer(request: web.Request) -> web.Response:
-    from jarvis_core.browser import submit_answer
+    from nook_core.browser import submit_answer
     body = await request.json()
     answer = body.get("answer", "")
     if not answer:
@@ -634,19 +634,19 @@ async def handle_browser_answer(request: web.Request) -> web.Response:
 
 
 async def handle_record_start(request: web.Request) -> web.Response:
-    from jarvis_core.browser import start_recording
+    from nook_core.browser import start_recording
     out = await start_recording(MANUAL_SESSION)
     return web.json_response(out)
 
 
 async def handle_record_stop(request: web.Request) -> web.Response:
-    from jarvis_core.browser import stop_recording
+    from nook_core.browser import stop_recording
     out = await stop_recording()
     return web.json_response(out)
 
 
 async def handle_record_state(request: web.Request) -> web.Response:
-    from jarvis_core.browser import get_recording_state
+    from nook_core.browser import get_recording_state
     return web.json_response(get_recording_state())
 
 
@@ -685,7 +685,7 @@ def _safe_fail_id(s: str) -> bool:
 
 
 async def handle_fails_list(request: web.Request) -> web.Response:
-    from jarvis_core.browser import FAIL_DIR
+    from nook_core.browser import FAIL_DIR
     if not FAIL_DIR.exists():
         return web.json_response({"items": []})
     items = []
@@ -711,7 +711,7 @@ async def handle_fails_list(request: web.Request) -> web.Response:
 
 
 async def handle_fails_screen(request: web.Request) -> web.Response:
-    from jarvis_core.browser import FAIL_DIR
+    from nook_core.browser import FAIL_DIR
     fid = request.match_info.get("id", "")
     if not _safe_fail_id(fid):
         return web.Response(status=400, text="bad id")
@@ -722,7 +722,7 @@ async def handle_fails_screen(request: web.Request) -> web.Response:
 
 
 async def handle_fails_html(request: web.Request) -> web.Response:
-    from jarvis_core.browser import FAIL_DIR
+    from nook_core.browser import FAIL_DIR
     fid = request.match_info.get("id", "")
     if not _safe_fail_id(fid):
         return web.Response(status=400, text="bad id")
@@ -733,7 +733,7 @@ async def handle_fails_html(request: web.Request) -> web.Response:
 
 
 async def handle_fails_delete(request: web.Request) -> web.Response:
-    from jarvis_core.browser import FAIL_DIR
+    from nook_core.browser import FAIL_DIR
     fid = request.match_info.get("id", "")
     if not _safe_fail_id(fid):
         return web.Response(status=400, text="bad id")
@@ -752,7 +752,7 @@ async def handle_fails_delete(request: web.Request) -> web.Response:
 
 
 async def handle_fails_clear(request: web.Request) -> web.Response:
-    from jarvis_core.browser import FAIL_DIR
+    from nook_core.browser import FAIL_DIR
     if not FAIL_DIR.exists():
         return web.json_response({"ok": True, "deleted": 0})
     n = 0
@@ -777,7 +777,7 @@ async def handle_hub_graph(request: web.Request) -> web.Response:
 
 async def _claude_one_shot(prompt: str, system: str = "") -> str:
     """Run a one-shot Claude query (no tools) and return joined text."""
-    options = ClaudeAgentOptions(system_prompt=system or "Você é Jarvis. Responda em português, conciso.", allowed_tools=[])
+    options = ClaudeAgentOptions(system_prompt=system or "Você é Nook. Responda em português, conciso.", allowed_tools=[])
     out = []
     async for msg in query(prompt=prompt, options=options):
         if isinstance(msg, AssistantMessage):
@@ -803,7 +803,7 @@ async def handle_hub_suggest_tags(request: web.Request) -> web.Response:
         f"TÍTULO: {title}\n\nCONTEÚDO:\n{content[:2000]}"
     )
     try:
-        raw = await _claude_one_shot(prompt, system="Você é Jarvis. Responda APENAS com JSON válido, sem markdown, sem explicações.")
+        raw = await _claude_one_shot(prompt, system="Você é Nook. Responda APENAS com JSON válido, sem markdown, sem explicações.")
         # Strip code fences if any
         raw = re.sub(r"^```(?:json)?\s*", "", raw)
         raw = re.sub(r"\s*```$", "", raw)
@@ -829,7 +829,7 @@ async def handle_macro_from_prompt(request: web.Request) -> web.Response:
     if not description:
         return web.json_response({"error": "description obrigatório"}, status=400)
     sys_prompt = (
-        "Você é Jarvis. Recebe uma descrição em português de uma rotina de browser e "
+        "Você é Nook. Recebe uma descrição em português de uma rotina de browser e "
         "produz um macro estruturado. Saída APENAS JSON com o schema:\n"
         "{\n"
         '  "name": "Nome curto (3-6 palavras)",\n'
@@ -870,7 +870,7 @@ async def handle_diagnostics(request: web.Request) -> web.Response:
 
     # 2. BMAD agents
     try:
-        from jarvis_core.bmad_loader import list_agents
+        from nook_core.bmad_loader import list_agents
         agents = list_agents()
         add(name="BMAD agents", status="ok", detail=f"{len(agents)}: " + ", ".join(agents))
     except Exception as e:
@@ -897,7 +897,7 @@ async def handle_diagnostics(request: web.Request) -> web.Response:
 
     # 5. Browser sessions
     try:
-        from jarvis_core.browser import MANUAL_SESSION, SCHEDULED_SESSION, _cdp_alive
+        from nook_core.browser import MANUAL_SESSION, SCHEDULED_SESSION, _cdp_alive
         cdp_url = MANUAL_SESSION.cdp_url
         cdp_ok = await _cdp_alive(cdp_url) if cdp_url else False
         add(name="Browser CDP",
@@ -914,7 +914,7 @@ async def handle_diagnostics(request: web.Request) -> web.Response:
 
     # 6. Voice (faster-whisper)
     try:
-        from jarvis_core import voice
+        from nook_core import voice
         add(name="Voice (Whisper)",
             status="ok" if voice.is_available() else "warn",
             detail="model=" + voice._MODEL_NAME + (" (loaded)" if voice._MODEL else " (lazy)") if voice.is_available() else "não instalado (faster-whisper)")
@@ -923,7 +923,7 @@ async def handle_diagnostics(request: web.Request) -> web.Response:
 
     # 7. Telegram
     try:
-        from jarvis_core import telegram_bot
+        from nook_core import telegram_bot
         add(name="Telegram bridge",
             status="ok" if telegram_bot.is_enabled() else "warn",
             detail="ativo" if telegram_bot.is_enabled() else "TELEGRAM_BOT_TOKEN/CHAT_ID não setados")
@@ -933,13 +933,13 @@ async def handle_diagnostics(request: web.Request) -> web.Response:
     # 8. Disk space (cache dirs)
     try:
         import shutil
-        cache = Path.home() / ".cache" / "jarvis"
+        cache = Path.home() / ".cache" / "nook"
         if cache.exists():
             usage = sum(f.stat().st_size for f in cache.rglob("*") if f.is_file())
             mb = round(usage / 1024 / 1024, 1)
-            add(name="Cache (~/.cache/jarvis)", status="ok", detail=f"{mb} MB")
+            add(name="Cache (~/.cache/nook)", status="ok", detail=f"{mb} MB")
         else:
-            add(name="Cache (~/.cache/jarvis)", status="warn", detail="vazio")
+            add(name="Cache (~/.cache/nook)", status="warn", detail="vazio")
         free = shutil.disk_usage("/home/diogo").free / (1024**3)
         add(name="Disco /home", status="ok" if free > 5 else "warn", detail=f"{round(free, 1)} GB livres")
     except Exception as e:
@@ -958,7 +958,7 @@ async def handle_diagnostics(request: web.Request) -> web.Response:
 
 async def handle_inbox(request: web.Request) -> web.Response:
     """Pendências agregadas: ask_user, fails recentes, próxima execução, git status."""
-    from jarvis_core.browser import get_pending_question, FAIL_DIR
+    from nook_core.browser import get_pending_question, FAIL_DIR
     from datetime import datetime
     import time as _t
     out: dict = {"items": [], "counts": {}}
@@ -1166,7 +1166,7 @@ async def _run_macro_internal(macro: dict, session=None, params: dict | None = N
         options = ClaudeAgentOptions(
             system_prompt=macro_system,
             allowed_tools=BROWSER_TOOL_NAMES,
-            mcp_servers={"jarvis-browser": make_browser_mcp(session)},
+            mcp_servers={"nook-browser": make_browser_mcp(session)},
         )
         async for _ in query(prompt=prompt, options=options):
             pass
@@ -1204,7 +1204,7 @@ async def _run_macro_internal(macro: dict, session=None, params: dict | None = N
         print(f"[macro] {macro['slug']} FAILED: {err}", flush=True)
         if notify:
             try:
-                from jarvis_core.telegram_bot import notify_async
+                from nook_core.telegram_bot import notify_async
                 await notify_async(f"❌ Macro `{macro['slug']}` falhou: {err}")
             except Exception:
                 pass
@@ -1246,7 +1246,7 @@ async def _on_startup(app):
     print("[scheduler] started", flush=True)
     asyncio.create_task(_initial_reindex())
     try:
-        from jarvis_core import telegram_bot
+        from nook_core import telegram_bot
         await telegram_bot.start_poller()
     except Exception as e:
         print(f"[telegram] startup failed: {e}", flush=True)
@@ -1274,19 +1274,19 @@ async def _on_cleanup(app):
     if _scheduler_task:
         _scheduler_task.cancel()
     try:
-        from jarvis_core import telegram_bot
+        from nook_core import telegram_bot
         await telegram_bot.stop_poller()
     except Exception:
         pass
 
 
 async def handle_voice_status(request: web.Request) -> web.Response:
-    from jarvis_core import voice
+    from nook_core import voice
     return web.json_response({"available": voice.is_available(), "model": voice._MODEL_NAME})
 
 
 async def handle_voice_transcribe(request: web.Request) -> web.Response:
-    from jarvis_core import voice
+    from nook_core import voice
     if not voice.is_available():
         return web.json_response({"ok": False, "error": "faster-whisper não instalado"}, status=503)
     # Aceita multipart com campo "audio" OU body raw
@@ -1307,15 +1307,15 @@ async def handle_voice_transcribe(request: web.Request) -> web.Response:
 
 
 async def handle_telegram_status(request: web.Request) -> web.Response:
-    from jarvis_core import telegram_bot
+    from nook_core import telegram_bot
     return web.json_response({"enabled": telegram_bot.is_enabled()})
 
 
 async def handle_telegram_test(request: web.Request) -> web.Response:
-    from jarvis_core import telegram_bot
+    from nook_core import telegram_bot
     if not telegram_bot.is_enabled():
         return web.json_response({"ok": False, "reason": "disabled"}, status=400)
-    ok = await telegram_bot.notify_async("✅ Jarvis: teste de notificação")
+    ok = await telegram_bot.notify_async("✅ Nook: teste de notificação")
     return web.json_response({"ok": ok})
 
 
@@ -1375,5 +1375,5 @@ def make_app() -> web.Application:
 
 
 if __name__ == "__main__":
-    print(f"[jarvis_core] up on :{PORT}", flush=True)
+    print(f"[nook_core] up on :{PORT}", flush=True)
     web.run_app(make_app(), host="127.0.0.1", port=PORT, print=None)

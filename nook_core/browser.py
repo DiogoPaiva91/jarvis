@@ -1,10 +1,10 @@
 """Browser automation tools for the Cowork worker.
 
 Two sessions:
-- MANUAL_SESSION: headed Chrome, profile in ~/.jarvis-browser-profile/.
+- MANUAL_SESSION: headed Chrome, profile in ~/.nook-browser-profile/.
   Used when the user is training in the Browser Worker UI.
 - SCHEDULED_SESSION: headless Chrome, separate profile in
-  ~/.jarvis-scheduler-profile/. Used by the cron scheduler so macros run
+  ~/.nook-scheduler-profile/. Used by the cron scheduler so macros run
   invisibly without disturbing the user's screen.
 
 Each session keeps its own profile so logins persist independently. The user
@@ -24,12 +24,12 @@ from claude_agent_sdk import tool, create_sdk_mcp_server
 from playwright.async_api import async_playwright, BrowserContext, Page
 
 DEFAULT_TIMEOUT_MS = 15000
-FAIL_DIR = Path.home() / ".cache" / "jarvis" / "browser-fails"
+FAIL_DIR = Path.home() / ".cache" / "nook" / "browser-fails"
 
 # If set, BrowserSession tries this CDP endpoint first. When the user's real
 # Chrome is launched with --remote-debugging-port=9222, Playwright attaches
 # to it and reuses ALL existing cookies/logins/extensions.
-CDP_URL_DEFAULT = os.environ.get("JARVIS_CHROME_CDP_URL", "http://localhost:9222")
+CDP_URL_DEFAULT = os.environ.get("NOOK_CHROME_CDP_URL", "http://localhost:9222")
 
 
 async def _cdp_alive(url: str) -> bool:
@@ -136,13 +136,13 @@ class BrowserSession:
 # available, fall back to isolated profiles (headed for manual, headless for
 # scheduler).
 MANUAL_SESSION = BrowserSession(
-    profile_dir=Path.home() / ".jarvis-browser-profile",
+    profile_dir=Path.home() / ".nook-browser-profile",
     headless=False,
     label="manual",
     try_cdp=True,
 )
 SCHEDULED_SESSION = BrowserSession(
-    profile_dir=Path.home() / ".jarvis-scheduler-profile",
+    profile_dir=Path.home() / ".nook-scheduler-profile",
     headless=True,
     label="scheduled",
     try_cdp=True,
@@ -183,8 +183,8 @@ _RECORDING: dict[str, Any] = {
 
 _RECORD_INIT_SCRIPT = r"""
 (() => {
-  if (window.__jarvisRecInstalled) return;
-  window.__jarvisRecInstalled = true;
+  if (window.__nookRecInstalled) return;
+  window.__nookRecInstalled = true;
 
   function safe(s) { return (s || "").toString().trim().slice(0, 80); }
 
@@ -219,7 +219,7 @@ _RECORD_INIT_SCRIPT = r"""
   }
 
   function send(evt) {
-    try { window.__jarvisRec && window.__jarvisRec(JSON.stringify(evt)); } catch (e) {}
+    try { window.__nookRec && window.__nookRec(JSON.stringify(evt)); } catch (e) {}
   }
 
   document.addEventListener("click", (e) => {
@@ -284,7 +284,7 @@ async def start_recording(session: "BrowserSession") -> dict:
     ctx = page.context
 
     # Idempotent: check if function already exposed
-    if not getattr(ctx, "_jarvis_rec_exposed", False):
+    if not getattr(ctx, "_nook_rec_exposed", False):
         async def _on_event(payload: str):
             try:
                 import json as _json
@@ -295,8 +295,8 @@ async def start_recording(session: "BrowserSession") -> dict:
             except Exception:
                 pass
         try:
-            await ctx.expose_function("__jarvisRec", _on_event)
-            ctx._jarvis_rec_exposed = True  # type: ignore
+            await ctx.expose_function("__nookRec", _on_event)
+            ctx._nook_rec_exposed = True  # type: ignore
         except Exception as e:
             print(f"[rec] expose_function failed: {e}", flush=True)
 
@@ -865,9 +865,9 @@ def _make_tools(session: BrowserSession) -> list:
         _PENDING_QUESTION = question
         # Mirror to Telegram if enabled — user can answer from phone
         try:
-            from jarvis_core.telegram_bot import notify_async, is_enabled
+            from nook_core.telegram_bot import notify_async, is_enabled
             if is_enabled():
-                asyncio.create_task(notify_async(f"❓ Jarvis pergunta: {question}\n_Responda esta mensagem._"))
+                asyncio.create_task(notify_async(f"❓ Nook pergunta: {question}\n_Responda esta mensagem._"))
         except Exception:
             pass
         try:
@@ -896,25 +896,25 @@ def make_browser_mcp(session: BrowserSession | None = None):
     if session is None:
         session = MANUAL_SESSION
     return create_sdk_mcp_server(
-        name="jarvis-browser",
+        name="nook-browser",
         version="1.0.0",
         tools=_make_tools(session),
     )
 
 
 BROWSER_TOOL_NAMES = [
-    "mcp__jarvis-browser__browser_open",
-    "mcp__jarvis-browser__browser_click",
-    "mcp__jarvis-browser__browser_type",
-    "mcp__jarvis-browser__browser_press",
-    "mcp__jarvis-browser__browser_extract",
-    "mcp__jarvis-browser__browser_screenshot",
-    "mcp__jarvis-browser__browser_wait",
-    "mcp__jarvis-browser__browser_url",
-    "mcp__jarvis-browser__browser_hover",
-    "mcp__jarvis-browser__browser_scroll",
-    "mcp__jarvis-browser__browser_select_option",
-    "mcp__jarvis-browser__browser_upload",
-    "mcp__jarvis-browser__browser_parallel",
-    "mcp__jarvis-browser__browser_ask_user",
+    "mcp__nook-browser__browser_open",
+    "mcp__nook-browser__browser_click",
+    "mcp__nook-browser__browser_type",
+    "mcp__nook-browser__browser_press",
+    "mcp__nook-browser__browser_extract",
+    "mcp__nook-browser__browser_screenshot",
+    "mcp__nook-browser__browser_wait",
+    "mcp__nook-browser__browser_url",
+    "mcp__nook-browser__browser_hover",
+    "mcp__nook-browser__browser_scroll",
+    "mcp__nook-browser__browser_select_option",
+    "mcp__nook-browser__browser_upload",
+    "mcp__nook-browser__browser_parallel",
+    "mcp__nook-browser__browser_ask_user",
 ]

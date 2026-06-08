@@ -68,8 +68,8 @@ function sseWrite(res, obj) {
   try { res.write(`data: ${JSON.stringify(obj)}\n\n`); } catch {}
 }
 
-// ── Sidecar proxy (jarvis_core Python on :3001) ──
-const CORE_PORT = parseInt(process.env.JARVIS_CORE_PORT, 10) || 3001;
+// ── Sidecar proxy (nook_core Python on :3001) ──
+const CORE_PORT = parseInt(process.env.NOOK_CORE_PORT, 10) || 3001;
 function proxyToCore(req, res) {
   const upstreamPath = req.url.replace(/^\/api\/core/, "") || "/";
   const opts = {
@@ -821,7 +821,7 @@ function hubGraph(res) {
   try {
     const nodes = [];
     const edges = [];
-    nodes.push({ id: "jarvis", label: "Nook", group: "core", size: 30, font: { size: 18 } });
+    nodes.push({ id: "nook", label: "Nook", group: "core", size: 30, font: { size: 18 } });
 
     // Track all files for wikilink resolution: name -> rel path
     const fileIndex = {}; // basename (lower, no ext) -> rel path
@@ -839,7 +839,7 @@ function hubGraph(res) {
       for (const f of folders) {
         const fid = "folder:" + f.name;
         nodes.push({ id: fid, label: f.name, group: "folder", size: 18 });
-        edges.push({ from: "jarvis", to: fid, length: 200 });
+        edges.push({ from: "nook", to: fid, length: 200 });
         const walk = (dir, depth) => {
           if (depth > 4) return;
           const entries = fs.readdirSync(dir, { withFileTypes: true });
@@ -864,7 +864,7 @@ function hubGraph(res) {
         if (!e.isFile() || !e.name.endsWith(".md")) continue;
         const nid = "file:" + e.name;
         nodes.push({ id: nid, label: e.name.replace(/\.md$/, ""), group: "file", size: 14, title: e.name });
-        edges.push({ from: "jarvis", to: nid });
+        edges.push({ from: "nook", to: nid });
         indexFile(path.join(HUB_ROOT, e.name), e.name);
       }
 
@@ -904,7 +904,7 @@ function hubGraph(res) {
       const recent = convs.slice().sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0)).slice(0, 50);
       const convGroup = { id: "convs", label: "Conversas", group: "convgroup", size: 20 };
       nodes.push(convGroup);
-      edges.push({ from: "jarvis", to: "convs", length: 200 });
+      edges.push({ from: "nook", to: "convs", length: 200 });
       for (const c of recent) {
         const nid = "conv:" + c.id;
         const label = (c.title || "(sem titulo)").slice(0, 30);
@@ -918,7 +918,7 @@ function hubGraph(res) {
       if (fs.existsSync(PROJETOS_ROOT)) {
         const projGroup = { id: "projetos", label: "Projetos", group: "projgroup", size: 20 };
         nodes.push(projGroup);
-        edges.push({ from: "jarvis", to: "projetos", length: 200 });
+        edges.push({ from: "nook", to: "projetos", length: 200 });
         const projEntries = fs.readdirSync(PROJETOS_ROOT, { withFileTypes: true })
           .filter(e => e.isDirectory() && !e.name.startsWith("."));
         for (const p of projEntries) {
@@ -1148,7 +1148,7 @@ async function saveHubNote(data, res) {
     extraTags = await fetchAutoTags(title, content, tagKindMap[folder] || "nota");
   }
   const allTags = Array.from(new Set([...baseTags, ...extraTags]));
-  const fm = `---\ntitulo: ${title.replace(/\n/g, " ")}\ndata: ${date}\nfonte: jarvis-chat\ntags: [${allTags.join(", ")}]\n---\n\n# ${title}\n\n`;
+  const fm = `---\ntitulo: ${title.replace(/\n/g, " ")}\ndata: ${date}\nfonte: nook-chat\ntags: [${allTags.join(", ")}]\n---\n\n# ${title}\n\n`;
   fs.writeFileSync(fullPath, fm + content + "\n");
   const relPath = path.relative(HUB_ROOT, fullPath);
   // Fire-and-forget: reindex embeddings so semantic search picks up the new note
@@ -1543,7 +1543,7 @@ async function scaffoldViteReact({ name, target, send }) {
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
-    <script src="http://localhost:3000/jarvis-picker.js"></script>
+    <script src="http://localhost:3000/nook-picker.js"></script>
   </body>
 </html>
 `);
@@ -2067,9 +2067,9 @@ ${template !== "vite-blank" ? "- Componentes shadcn em `src/components/ui/` (But
 
 Este projeto pode ter páginas visuais editadas no **Builder** do Nook Studio (modo Code → \`🧱 Builder\` ou Ctrl+B).
 
-Pages ficam em \`jarvis-pages/<nome>.page.json\`. Duas formas de consumir:
+Pages ficam em \`nook-pages/<nome>.page.json\`. Duas formas de consumir:
 
-- **Export to JSX** (\`📤 Export\`) — gera \`src/jarvis-pages/<nome>.tsx\` (ou \`src/app/<nome>/page.tsx\` no Next.js). Componente React real, edição manual sobrescrita no próximo Export.
+- **Export to JSX** (\`📤 Export\`) — gera \`src/nook-pages/<nome>.tsx\` (ou \`src/app/<nome>/page.tsx\` no Next.js). Componente React real, edição manual sobrescrita no próximo Export.
 - **Install Runtime** (\`📥 Runtime\`) — copia \`src/components/JBuilderPage.tsx\` que renderiza \`.page.json\` em runtime. Live binding: edita no Builder, salva, app atualiza.
 
 Pages têm formato: \`{ name, root: { id, type, props, children, events } }\`. 14 tipos suportados (Container/Card/Section/Heading/H2/H3/Text/Link/Button/Input/Image/Divider/Badge/Avatar). Workflows de eventos: alert/log/navigate/setState/fetch.
@@ -2104,7 +2104,7 @@ Instruções pra Claude Code (e outros assistentes IA) trabalhando neste projeto
 
 **${kindLabel}**${description ? `: ${description}` : ""}.
 
-Criado via Nook Studio${bmad ? " com BMAD instalado" : ""}. Metadata em \`.jarvis-project.json\`.
+Criado via Nook Studio${bmad ? " com BMAD instalado" : ""}. Metadata em \`.nook-project.json\`.
 ${stackBlock}${commandsBlock}
 ## Estrutura
 
@@ -2531,18 +2531,18 @@ async function postCreateEnrichProject({ name, target, description, kind, stack,
   } catch (e) { send("stderr", { line: "[scaffold] " + e.message }); }
   // 0.5) Inject Nook preview helpers (picker + runtime-error capture) into index.html
   try {
-    if (injectJarvisScripts(target)) {
-      send("status", { phase: "picker", message: "jarvis-picker.js + jarvis-errors.js injetados em index.html" });
+    if (injectNookScripts(target)) {
+      send("status", { phase: "picker", message: "nook-picker.js + nook-errors.js injetados em index.html" });
     }
   } catch (e) { send("stderr", { line: "[picker] " + e.message }); }
-  // 1) .jarvis-project.json — read by code-mode systemPrompt to inject context
+  // 1) .nook-project.json — read by code-mode systemPrompt to inject context
   try {
     const meta = { name, kind, description, stack, bmad, createdAt: today, hubNote: hubNote ? `projetos/${name}.md` : null };
     if (kind === "design-system") {
       meta.syncPaths = ["src/components/ui", "src/components/shared", "src/styles", "src/lib", "src/index.css", "tailwind.config.js", "tailwind.config.ts", "postcss.config.js", "components.json"];
     }
-    fs.writeFileSync(path.join(target, ".jarvis-project.json"), JSON.stringify(meta, null, 2));
-    send("status", { phase: "meta", message: "Metadata gravada em .jarvis-project.json" });
+    fs.writeFileSync(path.join(target, ".nook-project.json"), JSON.stringify(meta, null, 2));
+    send("status", { phase: "meta", message: "Metadata gravada em .nook-project.json" });
   } catch (e) {
     send("stderr", { line: "[meta] " + e.message });
   }
@@ -2815,7 +2815,7 @@ async function runBmadAgentForExistingProject({ projectPath, agentName, send }) 
 
   // Load metadata
   let meta = {};
-  try { meta = JSON.parse(fs.readFileSync(path.join(safe, ".jarvis-project.json"), "utf8")); }
+  try { meta = JSON.parse(fs.readFileSync(path.join(safe, ".nook-project.json"), "utf8")); }
   catch { /* ok, fields default to empty */ }
   const name = meta.name || path.basename(safe);
   const description = meta.description || "";
@@ -2887,14 +2887,14 @@ function _safeProjectPath(p) {
 // Inject the Nook preview helper scripts (picker + runtime-error capture) into
 // a project's index.html if missing. Runs at scaffold and on dev-server start,
 // so existing projects get the error-capture used by QA self-heal too.
-function injectJarvisScripts(targetDir) {
+function injectNookScripts(targetDir) {
   try {
     const idx = path.join(targetDir, "index.html");
     if (!fs.existsSync(idx)) return false;
     let html = fs.readFileSync(idx, "utf8");
     const tags = [];
-    if (!html.includes("jarvis-picker.js")) tags.push('    <script src="http://localhost:3000/jarvis-picker.js"></script>');
-    if (!html.includes("jarvis-errors.js")) tags.push('    <script src="http://localhost:3000/jarvis-errors.js"></script>');
+    if (!html.includes("nook-picker.js")) tags.push('    <script src="http://localhost:3000/nook-picker.js"></script>');
+    if (!html.includes("nook-errors.js")) tags.push('    <script src="http://localhost:3000/nook-errors.js"></script>');
     if (tags.length && /<\/body>/i.test(html)) {
       html = html.replace(/<\/body>/i, tags.join("\n") + "\n  </body>");
       fs.writeFileSync(idx, html);
@@ -2913,7 +2913,7 @@ function startDevServer(projectPath) {
   catch (e) { return { error: "package.json invalido: " + e.message }; }
   if (!pkg.scripts || !pkg.scripts.dev) return { error: 'Sem script "dev" no package.json' };
 
-  injectJarvisScripts(safe); // retroativo: garante picker+errors no index.html antes do Vite servir
+  injectNookScripts(safe); // retroativo: garante picker+errors no index.html antes do Vite servir
 
   const existing = devServers.get(safe);
   if (existing && existing.proc) return { ok: true, message: "ja rodando", state: getDevServerState(safe) };
@@ -3056,13 +3056,13 @@ function listDirsForPicker(rawPath, res) {
 // ── Design System: scan ~/dev/projetos/ for kind=design-system, link/sync ──
 function readProjectMeta(projDir) {
   try {
-    const p = path.join(projDir, ".jarvis-project.json");
+    const p = path.join(projDir, ".nook-project.json");
     if (!fs.existsSync(p)) return null;
     return JSON.parse(fs.readFileSync(p, "utf8"));
   } catch { return null; }
 }
 function writeProjectMeta(projDir, meta) {
-  fs.writeFileSync(path.join(projDir, ".jarvis-project.json"), JSON.stringify(meta, null, 2));
+  fs.writeFileSync(path.join(projDir, ".nook-project.json"), JSON.stringify(meta, null, 2));
 }
 
 function listDesignSystems(res) {
@@ -3171,7 +3171,7 @@ async function linkDesignSystem(targetRaw, dsRaw, res) {
   if (target === dsPath) { res.writeHead(400, { "Content-Type": "application/json" }); return res.end(JSON.stringify({ ok: false, error: "Nao pode vincular projeto a ele mesmo" })); }
   const targetMeta = readProjectMeta(target);
   const dsMeta = readProjectMeta(dsPath);
-  if (!targetMeta || !dsMeta) { res.writeHead(404, { "Content-Type": "application/json" }); return res.end(JSON.stringify({ ok: false, error: ".jarvis-project.json nao encontrado em um dos projetos" })); }
+  if (!targetMeta || !dsMeta) { res.writeHead(404, { "Content-Type": "application/json" }); return res.end(JSON.stringify({ ok: false, error: ".nook-project.json nao encontrado em um dos projetos" })); }
   if (dsMeta.kind !== "design-system") { res.writeHead(400, { "Content-Type": "application/json" }); return res.end(JSON.stringify({ ok: false, error: "Projeto vinculado nao eh design-system" })); }
   const syncPaths = Array.isArray(dsMeta.syncPaths) && dsMeta.syncPaths.length ? dsMeta.syncPaths : ["src/components/ui", "src/styles", "tailwind.config.js", "tailwind.config.ts", "postcss.config.js", "components.json"];
   const { copied, skipped } = _copyDsPaths(dsPath, target, syncPaths);
@@ -3214,13 +3214,13 @@ async function syncDesignSystem(targetRaw, res) {
 }
 
 // Copia um componente do DS pro projeto-alvo seguindo imports relativos
-// transitivos. sourceFile vem do data-jarvis-src do picker no formato
+// transitivos. sourceFile vem do data-nook-src do picker no formato
 // "src/components/ui/dialog.tsx" ou "src/components/ui/dialog.tsx:42".
 async function copyDesignComponent(dsRaw, targetRaw, sourceRaw, res) {
   const dsPath = _safeProjectPath(dsRaw);
   const target = _safeProjectPath(targetRaw);
   if (!dsPath || !target) { res.writeHead(403, { "Content-Type": "application/json" }); return res.end(JSON.stringify({ ok: false, error: "Caminho fora de ~/dev/projetos" })); }
-  // Strip ":<line>" suffix se vier do data-jarvis-src
+  // Strip ":<line>" suffix se vier do data-nook-src
   const sourceFile = String(sourceRaw).split(":")[0].replace(/^\/+/, "");
   const fromAbs = path.join(dsPath, sourceFile);
   if (!fromAbs.startsWith(dsPath + path.sep)) { res.writeHead(403, { "Content-Type": "application/json" }); return res.end(JSON.stringify({ ok: false, error: "sourceFile fora do DS" })); }
@@ -3385,7 +3385,7 @@ function unlinkDesignSystem(targetRaw, res) {
   const target = _safeProjectPath(targetRaw);
   if (!target) { res.writeHead(403, { "Content-Type": "application/json" }); return res.end(JSON.stringify({ ok: false, error: "Caminho fora de ~/dev/projetos" })); }
   const meta = readProjectMeta(target);
-  if (!meta) { res.writeHead(404, { "Content-Type": "application/json" }); return res.end(JSON.stringify({ ok: false, error: ".jarvis-project.json nao encontrado" })); }
+  if (!meta) { res.writeHead(404, { "Content-Type": "application/json" }); return res.end(JSON.stringify({ ok: false, error: ".nook-project.json nao encontrado" })); }
   delete meta.designSystem;
   writeProjectMeta(target, meta);
   res.writeHead(200, { "Content-Type": "application/json" });
@@ -4123,8 +4123,8 @@ function gitAction(action, payload, res) {
       const stageAll = payload.stageAll !== false; // default true
       // Use array form to avoid shell injection. For -m we still pass as single arg.
       // Compose as a small bash so we can chain stage + commit; sanitize msg by passing via env.
-      const env = { ...process.env, JARVIS_COMMIT_MSG: msg };
-      const cmd = (stageAll ? "git add -A && " : "") + 'git commit -m "$JARVIS_COMMIT_MSG"';
+      const env = { ...process.env, NOOK_COMMIT_MSG: msg };
+      const cmd = (stageAll ? "git add -A && " : "") + 'git commit -m "$NOOK_COMMIT_MSG"';
       const proc = spawn("bash", ["-c", cmd], { cwd: safeCwd, env, stdio: ["ignore", "pipe", "pipe"], timeout: 15000 });
       let out = "", err = "";
       proc.stdout.on("data", c => (out += c.toString()));
@@ -4182,7 +4182,7 @@ const server = http.createServer({ requestTimeout: 0, headersTimeout: 0 }, (req,
     const force = u.searchParams.get("force") === "1";
     const { spawn } = require("child_process");
     const args = force ? ["--force"] : [];
-    const proc = spawn("/home/diogo/dev/bin/jarvis-chrome", args, { stdio: ["ignore", "pipe", "pipe"] });
+    const proc = spawn("/home/diogo/dev/bin/nook-chrome", args, { stdio: ["ignore", "pipe", "pipe"] });
     let out = "", err = "";
     proc.stdout.on("data", (c) => out += c.toString());
     proc.stderr.on("data", (c) => err += c.toString());
@@ -4423,7 +4423,7 @@ const server = http.createServer({ requestTimeout: 0, headersTimeout: 0 }, (req,
         const slug = decodeURIComponent(planStepMatch[1]);
         const plan = planLib.updateStep(slug, planStepMatch[2], data);
         // Auto-chain: if step finished done AND chain is enabled, fire run-next in background
-        const autoChain = data.chain === true || process.env.JARVIS_PLAN_AUTO_CHAIN === "1";
+        const autoChain = data.chain === true || process.env.NOOK_PLAN_AUTO_CHAIN === "1";
         if (autoChain && data.status === "done") {
           const next = planLib.nextRunnableStep(plan);
           if (next) {
@@ -4913,7 +4913,7 @@ const server = http.createServer({ requestTimeout: 0, headersTimeout: 0 }, (req,
     }).catch((e) => { res.writeHead(500, { "Content-Type": "application/json" }); res.end(JSON.stringify({ error: e.message })); });
     return;
   }
-  if ((req.url === "/api/code/db/migrate" || req.url === "/api/code/db/generate" || req.url === "/api/code/db/promote" || req.url === "/api/code/db/diff") && req.method === "POST") {
+  if ((req.url === "/api/code/db/migrate" || req.url === "/api/code/db/generate" || req.url === "/api/code/db/promote" || req.url === "/api/code/db/diff" || req.url === "/api/code/db/publish" || req.url === "/api/code/db/inspect") && req.method === "POST") {
     let body = ""; req.on("data", c => body += c);
     req.on("end", async () => {
       try {
@@ -4925,6 +4925,8 @@ const server = http.createServer({ requestTimeout: 0, headersTimeout: 0 }, (req,
         if (req.url.endsWith("/generate")) r = await codeDb.migrationNew(safe, d.name || name);
         else if (req.url.endsWith("/diff")) r = await codeDb.dbDiff(safe, d.name || "schema");
         else if (req.url.endsWith("/promote")) r = await codeDb.promote(safe);
+        else if (req.url.endsWith("/publish")) r = await codeDb.publishToSchema(safe, d.schema, { dryRun: d.dryRun });
+        else if (req.url.endsWith("/inspect")) r = await codeDb.dbInspect(safe, d.schema);
         else r = await codeDb.migrate(safe);
         res.writeHead(r.ok ? 200 : 500, { "Content-Type": "application/json" });
         res.end(JSON.stringify(r));
@@ -4936,6 +4938,19 @@ const server = http.createServer({ requestTimeout: 0, headersTimeout: 0 }, (req,
     return;
   }
 
+  if (req.url === "/api/code/db/cloud/projects" && req.method === "POST") {
+    let body = ""; req.on("data", c => body += c);
+    req.on("end", async () => {
+      try {
+        const d = JSON.parse(body || "{}");
+        const r = await codeDb.cloudProjects(d.token);
+        res.writeHead(r.ok ? 200 : 400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(r));
+      } catch (e) { res.writeHead(400, { "Content-Type": "application/json" }); res.end(JSON.stringify({ error: e.message })); }
+    });
+    return;
+  }
+
   if (req.url === "/api/code/db/link" && req.method === "POST") {
     let body = ""; req.on("data", c => body += c);
     req.on("end", async () => {
@@ -4943,8 +4958,23 @@ const server = http.createServer({ requestTimeout: 0, headersTimeout: 0 }, (req,
         const d = JSON.parse(body || "{}");
         const safe = _safeProjectPath(d.path);
         if (!safe) throw new Error("Caminho invalido");
-        const r = await codeDb.link(safe, d.ref);
+        const r = await codeDb.link(safe, d.ref, d.token, { name: d.name, org: d.org });
         res.writeHead(r.ok ? 200 : 400, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(r));
+      } catch (e) { res.writeHead(400, { "Content-Type": "application/json" }); res.end(JSON.stringify({ error: e.message })); }
+    });
+    return;
+  }
+
+  if (req.url === "/api/code/db/unlink" && req.method === "POST") {
+    let body = ""; req.on("data", c => body += c);
+    req.on("end", async () => {
+      try {
+        const d = JSON.parse(body || "{}");
+        const safe = _safeProjectPath(d.path);
+        if (!safe) throw new Error("Caminho invalido");
+        const r = await codeDb.unlink(safe);
+        res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(r));
       } catch (e) { res.writeHead(400, { "Content-Type": "application/json" }); res.end(JSON.stringify({ error: e.message })); }
     });
